@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="SignUp">Sign Up</string>
+    <string name="SignIn">Sign In</string>
+    <string name="UserName">Username</string>
+    <string name="Password">Password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="register">Register</string>
+    <string name="registerView">That is the register screen, please full fill the fields below :)</string>
+    <string name="normalUser">That is the screen for normal users</string>
+    <string name="adminUser">That is the screen for admin users</string>
+    <string name="returnButton">Return</string>
+    <string name="adminReg">Register Admin</string>
+</resources>
