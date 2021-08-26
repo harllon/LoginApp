@@ -5,21 +5,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.databinding.ActivitySignupBinding;
 
 import java.util.List;
 import java.util.Objects;
 
+import Utils.passwordHash;
 import ViewModel.PersonViewModel;
 import roomTest.Person;
 
@@ -53,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
         sign_binding.returnBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signinIntent = new Intent(SignupActivity.this, MainActivity.class);
+                Intent signinIntent = new Intent(SignupActivity.this, MainActivity2.class);
                 startActivity(signinIntent);
             }
         });
@@ -73,7 +69,6 @@ public class SignupActivity extends AppCompatActivity {
                 }else{
                     for (int i = 0; i< listUsers.size(); i++){
                         if(listUsers.get(i).getUserName().equals(username)){
-                            Log.d("Validate", "Entrei aqui");
                             userCheck = true;
                             break;
                         }
@@ -89,7 +84,7 @@ public class SignupActivity extends AppCompatActivity {
                             Person newUser = new Person(username, email, password, name, admin);
                             mPersonViewModel.insert(newUser);
                             checkEmail = false;
-                            Intent inicialIntent = new Intent(SignupActivity.this, MainActivity.class);
+                            Intent inicialIntent = new Intent(SignupActivity.this, MainActivity2.class);
                             startActivity(inicialIntent);
                         }else{
                             Toast.makeText(SignupActivity.this, "This email is invalid", Toast.LENGTH_LONG).show();

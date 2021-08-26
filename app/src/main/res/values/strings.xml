@@ -14,4 +14,17 @@
     <string name="adminUser">That is the screen for admin users</string>
     <string name="returnButton">Return</string>
     <string name="adminReg">Register Admin</string>
+
+
+    <!--to toggle the open close button
+        of the navigation drawer-->
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="logout">Logout</string>
+    <string name="startTracking">Start Tracking</string>
+    <string name="stopTracking">Stop Tracking</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="dateTime">Date and Time</string>
+    <string name="clearBut">Clear</string>
 </resources>

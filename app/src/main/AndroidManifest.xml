@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myapplication">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,15 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".GpsActivity"
+            android:exported="true" />
+        <activity
+            android:name="ActivitiesNotUsed.MainActivity"
+            android:exported="true" />
+        <activity
             android:name=".SignupActivity"
             android:exported="true" />
         <activity
-            android:name=".AdminActivity"
+            android:name="ActivitiesNotUsed.AdminActivity"
             android:exported="true" />
         <activity
-            android:name=".NormalActivity"
+            android:name="ActivitiesNotUsed.NormalActivity"
             android:exported="true" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

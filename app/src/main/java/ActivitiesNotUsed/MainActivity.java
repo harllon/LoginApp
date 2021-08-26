@@ -1,27 +1,22 @@
-package com.example.myapplication;
+package ActivitiesNotUsed;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.myapplication.SignupActivity;
 import com.example.myapplication.databinding.ActivityMainBinding;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
+import Utils.passwordHash;
 import ViewModel.PersonViewModel;
 import roomTest.Person;
 
