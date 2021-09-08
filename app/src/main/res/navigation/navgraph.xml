@@ -20,4 +20,54 @@
         android:name="Fragments.NormalFragment"
         android:label="fragment_normal"
         tools:layout="@layout/fragment_normal" />
+    <fragment
+        android:id="@+id/gravityFragment"
+        android:name="Fragments.Sensors.GravityFragment"
+        android:label="fragment_gravity"
+        tools:layout="@layout/fragment_gravity" />
+    <fragment
+        android:id="@+id/accelerometerFragment"
+        android:name="Fragments.Sensors.AccelerometerFragment"
+        android:label="fragment_accelerometer"
+        tools:layout="@layout/fragment_accelerometer" />
+    <fragment
+        android:id="@+id/gyroscopeFragment"
+        android:name="Fragments.Sensors.GyroscopeFragment"
+        android:label="fragment_gyroscope"
+        tools:layout="@layout/fragment_gyroscope" />
+    <fragment
+        android:id="@+id/motionFragment"
+        android:name="Fragments.Sensors.MotionFragment"
+        android:label="fragment_motion"
+        tools:layout="@layout/fragment_motion" />
+    <fragment
+        android:id="@+id/rotationFragment"
+        android:name="Fragments.Sensors.RotationFragment"
+        android:label="fragment_rotation"
+        tools:layout="@layout/fragment_rotation" />
+    <fragment
+        android:id="@+id/imuFragment"
+        android:name="Fragments.ImuFragment"
+        android:label="fragment_imu"
+        tools:layout="@layout/fragment_imu" />
+    <fragment
+        android:id="@+id/stepFragment"
+        android:name="Fragments.Sensors.StepFragment"
+        android:label="fragment_step"
+        tools:layout="@layout/fragment_step" />
+    <fragment
+        android:id="@+id/gpsFragment"
+        android:name="Fragments.GpsFragment"
+        android:label="fragment_gps"
+        tools:layout="@layout/fragment_gps" />
+    <fragment
+        android:id="@+id/saveFragment"
+        android:name="Fragments.SaveFragment"
+        android:label="fragment_save"
+        tools:layout="@layout/fragment_save" />
+    <fragment
+        android:id="@+id/sensorFragment"
+        android:name="Fragments.SensorFragment"
+        android:label="fragment_sensor"
+        tools:layout="@layout/fragment_sensor" />
 </navigation>

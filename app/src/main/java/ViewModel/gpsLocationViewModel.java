@@ -17,6 +17,15 @@ public class gpsLocationViewModel extends AndroidViewModel {
     private gpsLocationRepository gpsRepository;
     private final LiveData<List<gpsLocation>> allGpsLocation;
     private List<gpsLocation> allGps;
+    private boolean isOn;
+
+    public void setOn(boolean on) {
+        isOn = on;
+    }
+
+    public boolean isOn() {
+        return isOn;
+    }
 
     public gpsLocationViewModel(Application application){
         super(application);

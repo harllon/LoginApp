@@ -10,7 +10,7 @@ import com.example.myapplication.databinding.ActivityGpsBinding;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import Adapters.DataSliderAdapter;
+import Adapters.ViewPager.DataSliderAdapter;
 
 public class GpsActivity extends AppCompatActivity {
     private ActivityGpsBinding gpsBinding;

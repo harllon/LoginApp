@@ -3,7 +3,6 @@ package Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,10 +19,9 @@ import com.example.myapplication.databinding.FragmentSavedgpsBinding;
 import java.util.List;
 import java.util.Objects;
 
-import Adapters.gpsRecyclerAdapter;
+import Adapters.RecyclerView.gpsRecyclerAdapter;
 import ViewModel.gpsLocationViewModel;
 import roomGPS.gpsLocation;
-import roomTest.Person;
 
 
 public class SavedgpsFragment extends Fragment {

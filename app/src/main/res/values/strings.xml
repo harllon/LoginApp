@@ -15,7 +15,15 @@
     <string name="returnButton">Return</string>
     <string name="adminReg">Register Admin</string>
 
-
+    <string-array name="time_array">
+        <item>Rate</item>
+        <item>10 seconds</item>
+        <item>1 second</item>
+        <item>0.2 seconds</item>
+        <item>0.02 seconds</item>
+        <item>0.06 seconds</item>
+        <item>0 seconds</item>
+    </string-array>
     <!--to toggle the open close button
         of the navigation drawer-->
     <string name="nav_open">Open</string>
@@ -27,4 +35,24 @@
     <string name="longitude">Longitude</string>
     <string name="dateTime">Date and Time</string>
     <string name="clearBut">Clear</string>
+    <string name="IMUTitle">IMU Sensors Menu</string>
+    <string name="gravity">Gravity Sensor</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="rotationSensor">Rotation Vector</string>
+    <string name="motionSensor">Significant Motion</string>
+    <string name="stepCounter">Step Counter</string>
+    <string name="gyro">Gyroscope</string>
+    <string name="saveButton">Save</string>
+    <string name="gravityTitle">Gravity Sensor</string>
+    <string name="rate">Update Rate</string>
+    <string name="set">Set</string>
+    <string name="imusensor">IMU Sensor</string>
+    <string name="gpssensor">GPS Sensor</string>
+    <string name="accelerometersensor">Accelerometer Sensor</string>
+    <string name="stepTitle">Step Counter Sensor</string>
+    <string name="motionTitle">Significant Motion Sensor</string>
+    <string name="rotationTitle">Rotation Sensor</string>
+    <string name="gyroscopeTitle">Gyroscope Sensor</string>
+    <string name="shareButton">Share</string>
+    <string name="fileName">Filename</string>
 </resources>

@@ -5,8 +5,4 @@
         android:id="@+id/nav_logout"
         android:title="@string/logout" />
 
-    <item
-        android:id="@+id/nav_GPS"
-        android:title="Track GPS" />
-
 </menu>
