@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.motionRecyclerAdapter;
-import ViewModel.gravityViewModel;
-import ViewModel.motionViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.motionViewModel;
 import roomSensors.entities.motion;
 
 

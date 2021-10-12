@@ -35,12 +35,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gravityViewModel;
-import ViewModel.motionViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.motionViewModel;
 import roomSensors.entities.motion;
 
-public class MotionFragment extends Fragment implements SensorEventListener {
+public class MotiondetectFragment extends Fragment implements SensorEventListener {
     private FragmentMotionBinding motionBinding;
     private motionViewModel motViewModel;
     private Sensor sensor;
@@ -51,7 +49,7 @@ public class MotionFragment extends Fragment implements SensorEventListener {
     Calendar calendar;
     SimpleDateFormat simpleDateFormat;
     private Uri motionLog;
-    public MotionFragment() {
+    public MotiondetectFragment() {
         // Required empty public constructor
     }
 
@@ -98,7 +96,7 @@ public class MotionFragment extends Fragment implements SensorEventListener {
     }
 
 
-    public void startTracking(MotionFragment t){
+    public void startTracking(MotiondetectFragment t){
         motionBinding.startMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,7 +107,7 @@ public class MotionFragment extends Fragment implements SensorEventListener {
         });
     }
 
-    public void stopTracking(MotionFragment t){
+    public void stopTracking(MotiondetectFragment t){
         motionBinding.stopMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,7 +141,7 @@ public class MotionFragment extends Fragment implements SensorEventListener {
                 String texto = "";
                 for (int i = 0; i < motViewModel.getMotion().size(); i++) {
                     String mot = String.valueOf(motViewModel.getMotion().get(i).getMotion());
-                    String dataTime = motViewModel.getMotion().get(i).getDateTime();
+                    String dataTime = motViewModel.getMotion().get(i).getDate();
                     texto = texto + "Motion: " + mot + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -189,7 +187,7 @@ public class MotionFragment extends Fragment implements SensorEventListener {
         simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
         float moti = event.values[0];
-        motion mot = new motion(moti, dateTime);
+        motion mot = new motion(moti, dateTime, dateTime);
         motViewModel.insert(mot);
 
     }

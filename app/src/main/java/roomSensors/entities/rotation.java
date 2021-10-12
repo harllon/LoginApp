@@ -11,8 +11,11 @@ public class rotation {
     @PrimaryKey(autoGenerate = true)
     private int pk_id;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
+
+    @ColumnInfo(name = "time")
+    private String time;
 
     @ColumnInfo(name = "xsin")
     private float xsin;
@@ -29,13 +32,14 @@ public class rotation {
     @ColumnInfo(name = "sha")
     private float sha;
 
-    public rotation(float xsin, float ysin, float zsin, float cos, float sha, String dateTime){
+    public rotation(float xsin, float ysin, float zsin, float cos, float sha, String date, String time){
         this.cos = cos;
-        this.dateTime = dateTime;
+        this.date = date;
         this.sha = sha;
         this.xsin = xsin;
         this.ysin = ysin;
         this.zsin = zsin;
+        this.time = time;
     }
 
     public float getSha() {
@@ -78,19 +82,27 @@ public class rotation {
         this.xsin = xsin;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public int getPk_id() {
         return pk_id;
     }
 
     public void setPk_id(int pk_id) {
         this.pk_id = pk_id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

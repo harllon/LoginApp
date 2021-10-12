@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.accelerometerRecyclerAdapter;
-import ViewModel.accelerometerViewModel;
-import ViewModel.gravityViewModel;
+import ViewModel.Motion.accelerometerViewModel;
 import roomSensors.entities.accelerometer;
-import roomSensors.entities.gravity;
 
 
 public class SavedAccelerometerFragment extends Fragment {

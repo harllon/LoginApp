@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.example.myapplication.SensorsActivity;
 import com.example.myapplication.databinding.FragmentImuBinding;
 
-import ViewModel.gravityViewModel;
+import ViewModel.Motion.gravityViewModel;
 
 
 public class ImuFragment extends Fragment {

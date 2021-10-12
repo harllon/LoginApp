@@ -1,46 +1,30 @@
 package Fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myapplication.GpsActivity;
+import com.example.myapplication.OptionsActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.SignupActivity;
 import com.example.myapplication.databinding.FragmentAdminBinding;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 
-import java.util.List;
-
-import Utils.sensorName;
-import ViewModel.gpsLocationViewModel;
 import ViewModel.sensorViewModel;
-import roomGPS.gpsLocation;
 
 public class AdminFragment extends Fragment {
     private FragmentAdminBinding adminBinding;
-    private SensorManager accManager;
-    private SensorManager gyroManager;
-    private SensorManager motionManager;
-    private SensorManager rotationManager;
-    private SensorManager stepcounterManager;
-    private SensorManager gravManager;
+
     private sensorViewModel ssViewModel;
-    private sensorName name;
+
     //private FusedLocationProviderClient fusedLocationClient;
+
 
     public AdminFragment() {
         // Required empty public constructor
@@ -64,7 +48,16 @@ public class AdminFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         adminBinding.adminToolbar.inflateMenu(R.menu.navigation_menu);
+
         ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
+       /* accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
+        gravViewModel = new ViewModelProvider(requireActivity()).get(gravityViewModel.class);
+        gyroViewModel = new ViewModelProvider(requireActivity()).get(gyroscopeViewModel.class);
+        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
+        rotViewModel = new ViewModelProvider(requireActivity()).get(rotationViewModel.class);
+        stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
+        gpsViewModel = new ViewModelProvider(requireActivity()).get(gpsLocationViewModel.class);*/
+
         adminBinding.adminToolbar.setOnMenuItemClickListener(item -> {
             switch(item.getItemId()){
                 case R.id.nav_logout:
@@ -80,64 +73,123 @@ public class AdminFragment extends Fragment {
                     return false;
             }
         });
-        adminBinding.sensorButton.setBackgroundColor(Color.GRAY);
-        adminBinding.sensorButton.setClickable(false);
+        //adminBinding.sensorButton.setBackgroundColor(Color.GRAY);
+        //adminBinding.sensorButton.setClickable(false);
         //returnMain();
         //registerAdmin();
         //Log.d("acc: ", String.valueOf(sensorName.ACCELEROMETER));
-        sensorStart();
-        buttonTrack();
-        verifySensors();
-        gpsStart();
-        imuStart();
+      //  sensorStart();
+       // buttonTrack();
+        //verifySensors();
+        //gpsStart();
+       // imuStart();
+        adminBinding.compassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(requireView()).navigate(R.id.compassFragment);
+            }
+        });
+        adminBinding.apagarei.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent track = new Intent(requireContext(), OptionsActivity.class);
+                boolean admin = true;
+                track.putExtra("isAdmin", admin);
+                startActivity(track);
+            }
+        });
+
+       /* adminBinding.envButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(requireView()).navigate(R.id.environmentFragment);
+            }
+        });*/
 
     }
 
-    public void buttonTrack(){
+ /*   public void buttonTrack(){
         adminBinding.accBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.accBox.isChecked()){
+                    accViewModel.setOn(true);
+                    Log.d("verificar", "true");
+                }else{
+                    accViewModel.setOn(false);
+                    Log.d("verificar", "false");
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.gravBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.gravBox.isChecked()){
+                    gravViewModel.setOn(true);
+                }else{
+                    gravViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.gyroBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.gyroBox.isChecked()){
+                    gyroViewModel.setOn(true);
+                }else{
+                    gyroViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.gpsBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.gpsBox.isChecked()){
+                    gpsViewModel.setOn(true);
+                }else{
+                    gpsViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.motionBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.motionBox.isChecked()){
+                    motViewModel.setOn(true);
+                }else{
+                    motViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.rotationBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.rotationBox.isChecked()){
+                    rotViewModel.setOn(true);
+                }else{
+                    rotViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
         adminBinding.stepcounterBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(adminBinding.stepcounterBox.isChecked()){
+                    stViewModel.setOn(true);
+                }else{
+                    stViewModel.setOn(false);
+                }
                 onCheckBoxClicked();
             }
         });
-    }
-    public void onCheckBoxClicked(){
+    }*/
+  /*  public void onCheckBoxClicked(){
         if(adminBinding.accBox.isChecked() || adminBinding.gpsBox.isChecked() || adminBinding.gyroBox.isChecked() || adminBinding.gravBox.isChecked() || adminBinding.motionBox.isChecked() || adminBinding.rotationBox.isChecked() || adminBinding.stepcounterBox.isChecked()){
             adminBinding.sensorButton.setBackgroundColor(Color.GREEN);
             adminBinding.sensorButton.setClickable(true);
@@ -145,49 +197,20 @@ public class AdminFragment extends Fragment {
             adminBinding.sensorButton.setBackgroundColor(Color.GRAY);
             adminBinding.sensorButton.setClickable(false);
         }
-    }
-    public void sensorStart(){
+    }*/
+   /* public void sensorStart(){
 
         adminBinding.sensorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(adminBinding.accBox.isChecked()){
-                    name = sensorName.ACCELEROMETER;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.stepcounterBox.isChecked()){
-                    name = sensorName.STEP_COUNTER;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.rotationBox.isChecked()){
-                    name = sensorName.ROTATION_VECTOR;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.motionBox.isChecked()){
-                    name = sensorName.MOTION_DETECT;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.gravBox.isChecked()){
-                    name = sensorName.GRAVITY;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.gyroBox.isChecked()){
-                    name = sensorName.GYROSCOPE;
-                    ssViewModel.setSensor(name);
-                }
-                if(adminBinding.gpsBox.isChecked()){
-                    name = sensorName.GPS;
-                    ssViewModel.setSensor(name);
-                }
                 if(adminBinding.sensorButton.isClickable()){
-                    ssViewModel.setAdmin(true);
                     Navigation.findNavController(requireView()).navigate(R.id.sensorFragment);
                 }
 
             }
         });
-    }
-    public void verifySensors(){
+    }*/
+   /* public void verifySensors(){
         accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gravManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -236,9 +259,9 @@ public class AdminFragment extends Fragment {
             adminBinding.stepcounterBox.setTextColor(Color.GREEN);
         }
         adminBinding.gpsBox.setTextColor(Color.GREEN);
-    }
+    }*/
 
-    public void imuStart(){
+   /* public void imuStart(){
         adminBinding.imuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -256,7 +279,7 @@ public class AdminFragment extends Fragment {
                 startActivity(gpsIntent);
             }
         });
-    }
+    }*/
     /*void returnMain(){
         adminBinding.buttonReturn.setOnClickListener(new View.OnClickListener() {
             @Override

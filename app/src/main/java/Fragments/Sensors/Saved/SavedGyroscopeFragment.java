@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.gyroscopeRecyclerAdapter;
-import ViewModel.gravityViewModel;
-import ViewModel.gyroscopeViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.gyroscopeViewModel;
 import roomSensors.entities.gyroscope;
 
 

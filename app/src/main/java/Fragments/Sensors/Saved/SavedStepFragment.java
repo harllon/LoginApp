@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.stepRecyclerAdapter;
-import ViewModel.gravityViewModel;
-import ViewModel.stepViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.stepViewModel;
 import roomSensors.entities.stepCounter;
 
 

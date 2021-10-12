@@ -18,22 +18,18 @@ public class gravity {
     @ColumnInfo(name = "gz")
     private float gz;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public gravity(float gx, float gy, float gz, String dateTime){
-        this.dateTime = dateTime;
+    @ColumnInfo(name = "time")
+    private String time;
+
+    public gravity(float gx, float gy, float gz, String date, String time){
+        this.date = date;
+        this.time = time;
         this.gx = gx;
         this.gy = gy;
         this.gz = gz;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public String getDateTime() {
-        return dateTime;
     }
 
     public void setPk_id(int pk_id) {
@@ -68,4 +64,19 @@ public class gravity {
         this.gz = gz;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 }

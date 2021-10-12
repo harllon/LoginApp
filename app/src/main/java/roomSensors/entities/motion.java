@@ -13,12 +13,16 @@ public class motion {
     @ColumnInfo(name = "motion")
     private float motion;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public motion(float motion, String dateTime){
-        this.dateTime = dateTime;
+    @ColumnInfo(name = "time")
+    private String time;
+
+    public motion(float motion, String date, String time){
+        this.date = date;
         this.motion = motion;
+        this.time = time;
     }
 
     public float getMotion() {
@@ -29,19 +33,27 @@ public class motion {
         this.motion = motion;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public int getPk_id() {
         return pk_id;
     }
 
     public void setPk_id(int pk_id) {
         this.pk_id = pk_id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

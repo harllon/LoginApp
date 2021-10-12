@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentRotationBinding;
 
 import java.io.File;
@@ -36,9 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gravityViewModel;
-import ViewModel.rotationViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.rotationViewModel;
 import roomSensors.entities.rotation;
 
 public class RotationFragment extends Fragment implements SensorEventListener {
@@ -150,7 +147,7 @@ public class RotationFragment extends Fragment implements SensorEventListener {
                     String zsin = String.valueOf(rotViewModel.getRotation().get(i).getZsin());
                     String cos = String.valueOf(rotViewModel.getRotation().get(i).getCos());
                     String sha = String.valueOf(rotViewModel.getRotation().get(i).getSha());
-                    String dataTime = rotViewModel.getRotation().get(i).getDateTime();
+                    String dataTime = rotViewModel.getRotation().get(i).getDate();
                     texto = texto + "Xsin: " + xsin + "; Ysin: " + ysin + "; Zsin: " + zsin + "; Cos: " + cos + "; Estimated Accuracy: " + sha + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -200,7 +197,7 @@ public class RotationFragment extends Fragment implements SensorEventListener {
         float zsin = event.values[2];
         float cos = event.values[3];
         float estimated = event.values[4];
-        rotation rot = new rotation(xsin, ysin, zsin, cos, estimated, dateTime);
+        rotation rot = new rotation(xsin, ysin, zsin, cos, estimated, dateTime, dateTime);
         rotViewModel.insert(rot);
     }
 

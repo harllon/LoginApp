@@ -23,10 +23,8 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
 import android.os.Looper;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,20 +55,33 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import Utils.sensorName;
-import ViewModel.accelerometerViewModel;
-import ViewModel.gpsLocationViewModel;
-import ViewModel.gravityViewModel;
-import ViewModel.gyroscopeViewModel;
-import ViewModel.motionViewModel;
-import ViewModel.rotationViewModel;
+import ViewModel.Environment.ambtempViewModel;
+import ViewModel.Environment.humidityViewModel;
+import ViewModel.Environment.lightViewModel;
+import ViewModel.Environment.pressureViewModel;
+import ViewModel.Motion.accelerometerViewModel;
+import ViewModel.Motion.gpsLocationViewModel;
+import ViewModel.Motion.gravityViewModel;
+import ViewModel.Motion.gyroscopeViewModel;
+import ViewModel.Motion.motionViewModel;
+import ViewModel.Motion.rotationViewModel;
+import ViewModel.Position.gameViewModel;
+import ViewModel.Position.magneticViewModel;
+import ViewModel.Position.proximityViewModel;
 import ViewModel.sensorViewModel;
-import ViewModel.stepViewModel;
+import ViewModel.Motion.stepViewModel;
 import roomGPS.gpsLocation;
 import roomSensors.entities.accelerometer;
+import roomSensors.entities.ambientTemperature;
+import roomSensors.entities.gameRotation;
 import roomSensors.entities.gravity;
 import roomSensors.entities.gyroscope;
+import roomSensors.entities.humidity;
+import roomSensors.entities.illuminance;
+import roomSensors.entities.magneticField;
 import roomSensors.entities.motion;
+import roomSensors.entities.pressure;
+import roomSensors.entities.proximity;
 import roomSensors.entities.rotation;
 import roomSensors.entities.stepCounter;
 
@@ -80,7 +91,6 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     int PERMISSION_ID = 44;
     int id = 1;
 
-    private sensorViewModel ssViewModel;
     private Sensor accelerometer;
     private SensorManager accManager;
     private Sensor gyroscope;
@@ -93,28 +103,46 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     private SensorManager stepcounterManager;
     private Sensor gravity;
     private SensorManager gravManager;
+    private Sensor ambientTemperature;
+    private SensorManager tempManager;
+    private Sensor illuminance;
+    private SensorManager illuminanceManager;
+    private Sensor pressure;
+    private SensorManager pressureManager;
+    private Sensor humidity;
+    private SensorManager humidityManager;
+    private Sensor game;
+    private SensorManager gameManager;
+    private Sensor magnetic;
+    private SensorManager magneticManager;
+    private Sensor prox;
+    private SensorManager proximityManager;
     private FusedLocationProviderClient fusedLocationClient;
 
 
+    private sensorViewModel ssViewModel;
     private accelerometerViewModel accViewModel;
     private gravityViewModel gravViewModel;
     private gyroscopeViewModel gyroViewModel;
     private motionViewModel motViewModel;
     private rotationViewModel rotViewModel;
     private stepViewModel stViewModel;
+    private ambtempViewModel ambViewModel;
+    private humidityViewModel humViewModel;
+    private lightViewModel illuViewModel;
+    private pressureViewModel pressViewModel;
+    private proximityViewModel proxViewModel;
+    private magneticViewModel magViewModel;
+    private gameViewModel gViewModel;
     private gpsLocationViewModel gpsViewModel;
 
-    private String dateTime;
+    private String date;
+    private String time;
+    private SimpleDateFormat dateFormat;
+    private SimpleDateFormat timeFormat;
     private Calendar calendar;
-    private SimpleDateFormat simpleDateFormat;
 
-    private Uri motionLog;
-    private Uri accLog;
-    private Uri gravLog;
-    private Uri gyroLog;
-    private Uri rotLog;
-    private Uri stepLog;
-    private Uri gpsLog;
+
     ArrayList<Uri> uriList = new ArrayList<>();
 
     private List<accelerometer> allAcc;
@@ -124,6 +152,13 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     private List<gravity> allGravity;
     private List<motion> allMotion;
     private List<gpsLocation> allGps;
+    private List<ambientTemperature> allTemp;
+    private List<roomSensors.entities.humidity> allHumidity;
+    private List<roomSensors.entities.illuminance> allIlluminance;
+    private List<roomSensors.entities.pressure> allPressure;
+    private List<magneticField> allMagnetic;
+    private List<proximity> allProximity;
+    private List<gameRotation> allGame;
 
     private int rate;
     private int rate2;
@@ -151,21 +186,22 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
-        ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
-        gravViewModel = new ViewModelProvider(requireActivity()).get(gravityViewModel.class);
-        gyroViewModel = new ViewModelProvider(requireActivity()).get(gyroscopeViewModel.class);
-        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
-        rotViewModel = new ViewModelProvider(requireActivity()).get(rotationViewModel.class);
-        stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
-        gpsViewModel = new ViewModelProvider(requireActivity()).get(gpsLocationViewModel.class);
-
         accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gravManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         motionManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         rotationManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         stepcounterManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        tempManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        pressureManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        illuminanceManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        humidityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        gameManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        magneticManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        proximityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         sensorBinding.startButton.setClickable(false);
         sensorBinding.startButton.setBackgroundColor(Color.GRAY);
@@ -175,12 +211,22 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
         sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
         sensorBinding.stopButton.setClickable(false);
-        sensorBinding.retClearButton.setBackgroundColor(Color.GREEN);
+        sensorBinding.clearButton.setBackgroundColor(Color.GREEN);
+
+        sensorBinding.startButton.setVisibility(View.INVISIBLE);
+        sensorBinding.saveButton.setVisibility(View.INVISIBLE);
+        sensorBinding.stopButton.setVisibility(View.INVISIBLE);
+        sensorBinding.shareButton.setVisibility(View.INVISIBLE);
+        sensorBinding.timeSpinner.setVisibility(View.INVISIBLE);
+        sensorBinding.clearButton.setVisibility(View.INVISIBLE);
+        sensorBinding.title.setVisibility(View.VISIBLE);
+        sensorBinding.subtitle.setVisibility(View.VISIBLE);
+
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(), R.array.time_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sensorBinding.timeSpinner.setAdapter(adapter);
-        //sensorBinding.timeSpinner.setTe
         sensorBinding.timeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -203,38 +249,30 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                             sensorBinding.startButton.setBackgroundColor(Color.GREEN);
                             rate = SensorManager.SENSOR_DELAY_NORMAL;
                             rate2 = 200;
-                            Log.d("0.2", "0.2");
+                            Log.d("0.2", String.valueOf(rate));
                         }else{
                             if(parent.getItemAtPosition(position).equals("0.02 seconds")){
                                 sensorBinding.startButton.setClickable(true);
                                 sensorBinding.startButton.setBackgroundColor(Color.GREEN);
                                 rate = SensorManager.SENSOR_DELAY_GAME;
                                 rate2 = 20;
-                                Log.d("0.02", "0.02");
+                                Log.d("0.02", String.valueOf(rate));
                             }else{
                                 if(parent.getItemAtPosition(position).equals("0.06 seconds")){
                                     sensorBinding.startButton.setClickable(true);
                                     sensorBinding.startButton.setBackgroundColor(Color.GREEN);
                                     rate = SensorManager.SENSOR_DELAY_UI;
                                     rate2 = 60;
-                                    Log.d("0.06", "0.06");
+                                    Log.d("0.06", String.valueOf(rate));
                                 }else{
-                                    if(parent.getItemAtPosition(position).equals("0 seconds")){
-                                        sensorBinding.startButton.setClickable(true);
-                                        sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                                        rate = SensorManager.SENSOR_DELAY_FASTEST;
-                                        rate2 = 0;
-                                        Log.d("0", "0");
-                                    }else{
-                                        sensorBinding.startButton.setClickable(false);
-                                        sensorBinding.startButton.setBackgroundColor(Color.GRAY);
-                                        sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
-                                        sensorBinding.shareButton.setClickable(false);
-                                        sensorBinding.saveButton.setClickable(false);
-                                        sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
-                                        sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
-                                        sensorBinding.stopButton.setClickable(false);
-                                    }
+                                    sensorBinding.startButton.setClickable(false);
+                                    sensorBinding.startButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.shareButton.setClickable(false);
+                                    sensorBinding.saveButton.setClickable(false);
+                                    sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.stopButton.setClickable(false);
                                 }
                             }
                         }
@@ -243,49 +281,204 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+        startViewModel();
+        updateList();
+        startTracking(this);
+        stopTracking(this);
+        save();
+        share();
+        clear(this);
+        observeCheckbox();
 
+    }
+
+    public void observeCheckbox(){
+        illuViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                illuViewModel.setOn(aBoolean);
+                showButtons();
             }
         });
 
-        for(int i = 0; i < ssViewModel.getSensor().size(); i++){
-            //Log.d("Valor: ", String.valueOf(ssViewModel.getSensor().get(i)));
-            if(ssViewModel.getSensor().get(i) == sensorName.ACCELEROMETER){
-                accelerometer = accManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-                accViewModel.setOn(true);
-                continue;
+        ambViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                ambViewModel.setOn(aBoolean);
+                showButtons();
             }
-            if(ssViewModel.getSensor().get(i) == sensorName.GRAVITY){
-                gravity = gravManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-                gravViewModel.setOn(true);
-                continue;
-            }
-            if(ssViewModel.getSensor().get(i) == sensorName.GYROSCOPE){
-                gyroscope = gyroManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-                gyroViewModel.setOn(true);
-                continue;
-            }
-            if(ssViewModel.getSensor().get(i) == sensorName.MOTION_DETECT){
-                motion = motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT);
-                motViewModel.setOn(true);
-                continue;
-            }
-            if(ssViewModel.getSensor().get(i) == sensorName.ROTATION_VECTOR){
-                rotation = rotationManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-                rotViewModel.setOn(true);
-                continue;
-            }
-            if(ssViewModel.getSensor().get(i) == sensorName.STEP_COUNTER){
-                stepCounter = stepcounterManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-                stViewModel.setOn(true);
-                continue;
-            }
-            if(ssViewModel.getSensor().get(i) == sensorName.GPS){
-                gpsViewModel.setOn(true);
-                fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-            }
-        }
+        });
 
+        humViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                humViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        pressViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                pressViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        accViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                accViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        gpsViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                gpsViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        gravViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                gravViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        gyroViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                gyroViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        motViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                motViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        rotViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                rotViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        stViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                stViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        proxViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                proxViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        magViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                magViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+
+        gViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                gViewModel.setOn(aBoolean);
+                showButtons();
+            }
+        });
+    }
+
+    public void showButtons(){
+        if(ambViewModel.isOn() || humViewModel.isOn() || illuViewModel.isOn() || pressViewModel.isOn() || accViewModel.isOn() || gpsViewModel.isOn() || gravViewModel.isOn() || gyroViewModel.isOn() || motViewModel.isOn() || rotViewModel.isOn() || stViewModel.isOn() || proxViewModel.isOn() || magViewModel.isOn() || gViewModel.isOn()){
+            sensorBinding.startButton.setVisibility(View.VISIBLE);
+            sensorBinding.saveButton.setVisibility(View.VISIBLE);
+            sensorBinding.stopButton.setVisibility(View.VISIBLE);
+            sensorBinding.shareButton.setVisibility(View.VISIBLE);
+            sensorBinding.timeSpinner.setVisibility(View.VISIBLE);
+            sensorBinding.clearButton.setVisibility(View.VISIBLE);
+            sensorBinding.title.setVisibility(View.INVISIBLE);
+            sensorBinding.subtitle.setVisibility(View.INVISIBLE);
+        }else{
+            sensorBinding.startButton.setVisibility(View.INVISIBLE);
+            sensorBinding.saveButton.setVisibility(View.INVISIBLE);
+            sensorBinding.stopButton.setVisibility(View.INVISIBLE);
+            sensorBinding.shareButton.setVisibility(View.INVISIBLE);
+            sensorBinding.timeSpinner.setVisibility(View.INVISIBLE);
+            sensorBinding.clearButton.setVisibility(View.INVISIBLE);
+            sensorBinding.title.setVisibility(View.VISIBLE);
+            sensorBinding.subtitle.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void startViewModel(){
+        accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
+        ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
+        gravViewModel = new ViewModelProvider(requireActivity()).get(gravityViewModel.class);
+        gyroViewModel = new ViewModelProvider(requireActivity()).get(gyroscopeViewModel.class);
+        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
+        rotViewModel = new ViewModelProvider(requireActivity()).get(rotationViewModel.class);
+        stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
+        gpsViewModel = new ViewModelProvider(requireActivity()).get(gpsLocationViewModel.class);
+        ambViewModel = new ViewModelProvider(requireActivity()).get(ambtempViewModel.class);
+        ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
+        ambViewModel = new ViewModelProvider(requireActivity()).get(ambtempViewModel.class);
+        pressViewModel = new ViewModelProvider(requireActivity()).get(pressureViewModel.class);
+        humViewModel = new ViewModelProvider(requireActivity()).get(humidityViewModel.class);
+        illuViewModel = new ViewModelProvider(requireActivity()).get(lightViewModel.class);
+        proxViewModel = new ViewModelProvider(requireActivity()).get(proximityViewModel.class);
+        gViewModel = new ViewModelProvider(requireActivity()).get(gameViewModel.class);
+        magViewModel = new ViewModelProvider(requireActivity()).get(magneticViewModel.class);
+    }
+
+    public void updateList(){
+        ambViewModel.getAllAmbTempSensor().observe(getViewLifecycleOwner(), new Observer<List<roomSensors.entities.ambientTemperature>>() {
+            @Override
+            public void onChanged(List<roomSensors.entities.ambientTemperature> ambientTemperatures) {
+                allTemp = Objects.requireNonNull(ambientTemperatures);
+                ambViewModel.update(allTemp);
+            }
+        });
+        illuViewModel.getAllIlluminanceSensor().observe(getViewLifecycleOwner(), new Observer<List<roomSensors.entities.illuminance>>() {
+            @Override
+            public void onChanged(List<roomSensors.entities.illuminance> illuminances) {
+                allIlluminance = Objects.requireNonNull(illuminances);
+                illuViewModel.update(allIlluminance);
+            }
+        });
+        humViewModel.getAllHumiditySensor().observe(getViewLifecycleOwner(), new Observer<List<roomSensors.entities.humidity>>() {
+            @Override
+            public void onChanged(List<roomSensors.entities.humidity> humidities) {
+                allHumidity = Objects.requireNonNull(humidities);
+                humViewModel.update(allHumidity);
+            }
+        });
+        pressViewModel.getAllPressureSensor().observe(getViewLifecycleOwner(), new Observer<List<roomSensors.entities.pressure>>() {
+            @Override
+            public void onChanged(List<roomSensors.entities.pressure> pressures) {
+                allPressure = Objects.requireNonNull(pressures);
+                pressViewModel.update(allPressure);
+            }
+        });
         accViewModel.getAllAccelerometer().observe(getViewLifecycleOwner(), new Observer<List<accelerometer>>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -331,6 +524,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             }
         });
         motViewModel.getAllMotion().observe(getViewLifecycleOwner(), new Observer<List<motion>>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChanged(List<motion> motions) {
                 allMotion = Objects.requireNonNull(motions);
@@ -349,57 +543,206 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                 }
             }
         });
-
-        ssViewModel.clear();
-        startTracking(this);
-        stopTracking(this);
-        save();
-        share();
-        returnClear();
+        proxViewModel.getAllProximitySensor().observe(getViewLifecycleOwner(), new Observer<List<proximity>>() {
+            @Override
+            public void onChanged(List<proximity> proximities) {
+                allProximity = Objects.requireNonNull(proximities);
+                proxViewModel.updateList(allProximity);
+            }
+        });
+        gViewModel.getAllGameSensor().observe(getViewLifecycleOwner(), new Observer<List<gameRotation>>() {
+            @Override
+            public void onChanged(List<gameRotation> gameRotations) {
+                allGame = Objects.requireNonNull(gameRotations);
+                gViewModel.updateList(allGame);
+            }
+        });
+        magViewModel.getAllMagneticSensor().observe(getViewLifecycleOwner(), new Observer<List<magneticField>>() {
+            @Override
+            public void onChanged(List<magneticField> magneticFields) {
+                allMagnetic = Objects.requireNonNull(magneticFields);
+                magViewModel.updateList(allMagnetic);
+            }
+        });
     }
-
-    public void returnClear(){
-        sensorBinding.retClearButton.setOnClickListener(new View.OnClickListener() {
+    public void removeAll(SensorFragment view){
+        illuminanceManager.unregisterListener((SensorEventListener) view);
+        tempManager.unregisterListener((SensorEventListener) view);
+        pressureManager.unregisterListener((SensorEventListener) view);
+        humidityManager.unregisterListener((SensorEventListener) view);
+        accManager.unregisterListener((SensorEventListener) view);
+        gravManager.unregisterListener((SensorEventListener) view);
+        gyroManager.unregisterListener((SensorEventListener) view);
+        motionManager.unregisterListener((SensorEventListener) view);
+        rotationManager.unregisterListener((SensorEventListener) view);
+        stepcounterManager.unregisterListener((SensorEventListener) view);
+        proximityManager.unregisterListener((SensorEventListener) view);
+        magneticManager.unregisterListener((SensorEventListener) view);
+        gameManager.unregisterListener((SensorEventListener) view);
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+    public void clear(SensorFragment view){
+        sensorBinding.clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accViewModel.clear();
-                gravViewModel.clear();
-                gyroViewModel.clear();
-                rotViewModel.clear();
-                motViewModel.clear();
-                stViewModel.clear();
-                if(ssViewModel.isAdmin()){
-                    Navigation.findNavController(requireView()).navigate(R.id.adminFragment);
-                }else{
-                    Navigation.findNavController(requireView()).navigate(R.id.normalFragment);
+                removeAll(view);
+                if(ambViewModel.isOn()){
+                    ambViewModel.clear();
+                    ambViewModel.setOn(false);
+                    ambViewModel.setIsCheck(false);
                 }
-
+                if(illuViewModel.isOn()){
+                    illuViewModel.clear();
+                    illuViewModel.setOn(false);
+                    illuViewModel.setIsCheck(false);
+                }
+                if(pressViewModel.isOn()){
+                    pressViewModel.clear();
+                    pressViewModel.setOn(false);
+                    pressViewModel.setIsCheck(false);
+                }
+                if(humViewModel.isOn()){
+                    humViewModel.clear();
+                    humViewModel.setOn(false);
+                    humViewModel.setIsCheck(false);
+                }
+                if(accViewModel.isOn()){
+                    accViewModel.clear();
+                    accViewModel.setOn(false);
+                    accViewModel.setIsCheck(false);
+                }
+                if(gravViewModel.isOn()){
+                    gravViewModel.clear();
+                    gravViewModel.setOn(false);
+                    gravViewModel.setIsCheck(false);
+                }
+                if(gyroViewModel.isOn()){
+                    gyroViewModel.clear();
+                    gyroViewModel.setOn(false);
+                    gyroViewModel.setIsCheck(false);
+                }
+                if(motViewModel.isOn()){
+                    motViewModel.clear();
+                    motViewModel.setOn(false);
+                    motViewModel.setIsCheck(false);
+                }
+                if(rotViewModel.isOn()){
+                    rotViewModel.clear();
+                    rotViewModel.setOn(false);
+                    rotViewModel.setIsCheck(false);
+                }
+                if(stViewModel.isOn()){
+                    stViewModel.clear();
+                    stViewModel.setOn(false);
+                    stViewModel.setIsCheck(false);
+                }
+                if(gpsViewModel.isOn()){
+                    gpsViewModel.clear();
+                    gpsViewModel.setOn(false);
+                    gpsViewModel.setIsCheck(false);
+                }
+                if(proxViewModel.isOn()){
+                    proxViewModel.clear();
+                    proxViewModel.setOn(false);
+                    proxViewModel.setIsCheck(false);
+                }
+                if(magViewModel.isOn()){
+                    magViewModel.clear();
+                    magViewModel.setOn(false);
+                    magViewModel.setIsCheck(false);
+                }
+                if(gViewModel.isOn()){
+                    gViewModel.clear();
+                    gViewModel.setOn(false);
+                    gViewModel.setIsCheck(false);
+                }
+                uriList.removeAll(uriList);
+                //ssViewModel.setClicked(false);
+                sensorBinding.shareButton.setClickable(false);
+                sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
+                sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
+                sensorBinding.saveButton.setClickable(false);
+                sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
+                sensorBinding.stopButton.setClickable(false);
             }
         });
     }
 
     public void startTracking(SensorFragment view){
         sensorBinding.startButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 if(sensorBinding.startButton.isClickable()){
+                    if(ambViewModel.isOn()){
+                        ambientTemperature = tempManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+                        tempManager.registerListener((SensorEventListener) view, ambientTemperature, rate);
+                    }
+                    if(illuViewModel.isOn()){
+                        illuminance = illuminanceManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+                        Log.d("Max Delay Light", String.valueOf(illuminance.getMaxDelay()));
+                        Log.d("Min Delay Light", String.valueOf(illuminance.getMinDelay()));
+                        illuminanceManager.registerListener((SensorEventListener) view, illuminance, rate);
+                    }
+                    if(pressViewModel.isOn()){
+                        pressure = pressureManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+                        pressureManager.registerListener((SensorEventListener) view, pressure, rate);
+                    }
+                    if(humViewModel.isOn()){
+                        humidity = humidityManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+                        humidityManager.registerListener((SensorEventListener) view, humidity, rate);
+                    }
                     if(accViewModel.isOn()){
-                        accManager.registerListener((SensorEventListener) view, accelerometer, rate);
+                        accelerometer = accManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+                        Log.d("Max Delay Accelerometer", String.valueOf(accelerometer.getMaxDelay()));
+                        Log.d("Min Delay Accelerometer", String.valueOf(accelerometer.getMinDelay()));
+                        //Log.d("Reporting Mode", String.valueOf(accelerometer.getReportingMode()));
+                        //Log.d("Fifo Max Event Count", String.valueOf(accelerometer.getFifoMaxEventCount()));
+                        accManager.registerListener((SensorEventListener) view, accelerometer, 100000);
                     }
                     if(gravViewModel.isOn()){
+                        gravity = gravManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+                        Log.d("Max Delay Gravity", String.valueOf(gravity.getMaxDelay()));
+                        Log.d("Min Delay Gravity", String.valueOf(gravity.getMinDelay()));
                         gravManager.registerListener((SensorEventListener) view, gravity, rate);
                     }
                     if(gyroViewModel.isOn()){
+                        gyroscope = gyroManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                        Log.d("Max Delay Gyro", String.valueOf(gyroscope.getMaxDelay()));
+                        Log.d("Min Delay Gyro", String.valueOf(gyroscope.getMinDelay()));
                         gyroManager.registerListener((SensorEventListener) view, gyroscope, rate);
                     }
                     if(motViewModel.isOn()){
+                        motion = motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT);
                         motionManager.registerListener((SensorEventListener) view, motion, rate);
                     }
                     if(rotViewModel.isOn()){
+                        rotation = rotationManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+                        Log.d("Max Delay Rotation", String.valueOf(rotation.getMaxDelay()));
+                        Log.d("Min Delay Rotation", String.valueOf(rotation.getMinDelay()));
                         rotationManager.registerListener((SensorEventListener) view, rotation, rate);
                     }
                     if(stViewModel.isOn()){
+                        stepCounter = stepcounterManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
                         stepcounterManager.registerListener((SensorEventListener) view, stepCounter, rate);
+                    }
+                    if(proxViewModel.isOn()){
+                        prox = proximityManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                        Log.d("Max Delay Proximity", String.valueOf(prox.getMaxDelay()));
+                        Log.d("Min Delay Proximity", String.valueOf(prox.getMinDelay()));
+                        proximityManager.registerListener((SensorEventListener) view, prox, rate);
+                    }
+                    if(gViewModel.isOn()){
+                        game = gameManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                        Log.d("Max Delay Game", String.valueOf(game.getMaxDelay()));
+                        Log.d("Min Delay Game", String.valueOf(game.getMinDelay()));
+                        gameManager.registerListener((SensorEventListener) view, game, rate);
+                    }
+                    if(magViewModel.isOn()){
+                        magnetic = magneticManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+                        Log.d("Max Delay Magnetic", String.valueOf(magnetic.getMaxDelay()));
+                        Log.d("Min Delay Magnetic", String.valueOf(magnetic.getMinDelay()));
+                        magneticManager.registerListener((SensorEventListener) view, magnetic, rate);
                     }
                     if(gpsViewModel.isOn()){
                         if (checkPermission()) {
@@ -409,10 +752,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                                     public void onComplete(@NonNull Task<Location> task) {
                                         Location newLocation = task.getResult();
                                         if (newLocation != null){
-                                            calendar = Calendar.getInstance();
-                                            simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
-                                            dateTime = simpleDateFormat.format(calendar.getTime());
-                                            gpsLocation gps = new gpsLocation(id, newLocation.getLatitude(), newLocation.getLongitude(), dateTime);
+                                            getDateTime();
+                                            gpsLocation gps = new gpsLocation(id, newLocation.getLatitude(), newLocation.getLongitude(), newLocation.getSpeed(), newLocation.getAltitude(), date, time);
                                             gpsViewModel.insert(gps);
                                         }
                                         requestNewLocationData();
@@ -437,6 +778,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             }
         });
     }
+
     public void share(){
         sensorBinding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -449,15 +791,29 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
                         startActivity(emailIntent);
                     }
+                    uriList.removeAll(uriList);
                 }
             }
         });
     }
+
     public void stopTracking(SensorFragment view){
         sensorBinding.stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(sensorBinding.stopButton.isClickable()){
+                    if(ambViewModel.isOn()){
+                        tempManager.unregisterListener((SensorEventListener) view);
+                    }
+                    if(illuViewModel.isOn()){
+                        illuminanceManager.unregisterListener((SensorEventListener) view);
+                    }
+                    if(pressViewModel.isOn()){
+                        pressureManager.unregisterListener((SensorEventListener) view);
+                    }
+                    if(humViewModel.isOn()){
+                        humidityManager.unregisterListener((SensorEventListener) view);
+                    }
                     if(accViewModel.isOn()){
                         accManager.unregisterListener((SensorEventListener) view);
                     }
@@ -476,6 +832,15 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     if(stViewModel.isOn()){
                         stepcounterManager.unregisterListener((SensorEventListener) view);
                     }
+                    if(proxViewModel.isOn()){
+                        proximityManager.unregisterListener((SensorEventListener) view);
+                    }
+                    if(magViewModel.isOn()){
+                        magneticManager.unregisterListener((SensorEventListener) view);
+                    }
+                    if(gViewModel.isOn()){
+                        gameManager.unregisterListener((SensorEventListener) view);
+                    }
                     if(gpsViewModel.isOn()){
                         fusedLocationClient.removeLocationUpdates(locationCallback);
                     }
@@ -488,203 +853,205 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    public void writeFile(String text, String fileName){
+        //CSVWriter writer = null;
+        File file = new File(requireActivity().getExternalFilesDir(null), fileName);
+        Uri log = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
+        uriList.add(log);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(text.getBytes(StandardCharsets.UTF_8));
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void save(){
         sensorBinding.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(sensorBinding.saveButton.isClickable()){
+                    if(ambViewModel.isOn()){
+                        String text = "Ambient Temperature" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Temperature" + "," + "Date" + "\n";
+                        for(int i = 0; i< ambViewModel.getAllAmbTemp().size(); i++){
+                            String temperature = String.valueOf(ambViewModel.getAllAmbTemp().get(i).getTemperature());
+                            String date = String.valueOf(ambViewModel.getAllAmbTemp().get(i).getDate());
+                            String time = String.valueOf(ambViewModel.getAllAmbTemp().get(i).getTime());
+                            text = text + time + "," + temperature + "," + date + "\n";
+                        }
+                        String fileName = "temperatureLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(illuViewModel.isOn()){
+                        String text = "Sensor: Light" + "," + "rate: " + rate + "\n" + "Time" + "," + "Illuminance" + "," + "Date" + "\n";
+                        for(int i = 0; i<illuViewModel.getAllIlluminance().size(); i++){
+                            String illuminance = String.valueOf(illuViewModel.getAllIlluminance().get(i).getIlluminance());
+                            String date = illuViewModel.getAllIlluminance().get(i).getDate();
+                            String time = illuViewModel.getAllIlluminance().get(i).getTime();
+                            text = text + time + "," + illuminance + "," + date + "\n";
+                        }
+                        String fileName = "illuminanceLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(pressViewModel.isOn()){
+                        String text = "Sensor: Pressure" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Pressure" + "," + "Date" + "\n";
+                        for(int i = 0; i<pressViewModel.getAllPressure().size(); i++){
+                            String pressure = String.valueOf(pressViewModel.getAllPressure().get(i).getPressure());
+                            String date = pressViewModel.getAllPressure().get(i).getDate();
+                            String time = pressViewModel.getAllPressure().get(i).getTime();
+                            text = text + time + "," + pressure + "," + date + "\n";
+                        }
+                        String fileName = "pressureLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(humViewModel.isOn()){
+                        String text = "Sensor: Relative Humidity" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Relative Humidity" + "," + "Date" + "\n";
+                        for(int i =0; i<humViewModel.getAllHumidity().size(); i++){
+                            String relHumidity = String.valueOf(humViewModel.getAllHumidity().get(i).getHumidity());
+                            String date = humViewModel.getAllHumidity().get(i).getDate();
+                            String time = humViewModel.getAllHumidity().get(i).getTime();
+                            text = text + time + "," + relHumidity + "," + date + "\n";
+                        }
+                        String fileName = "humidityLog.csv";
+                        writeFile(text, fileName);
+                    }
                     if(accViewModel.isOn()){
-                        String texto = "Ax" + ";Ay" + ";Az" + ";Date and Time" + "\n";
+                        String text = "Sensor: Accelerometer" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Ax" + "," + "Ay" + "," + "Az" + "," + "Date" + "\n";
                         for (int i = 0; i < accViewModel.getAccelerometer().size(); i++) {
                             String ax = String.valueOf(accViewModel.getAccelerometer().get(i).getAx());
                             String ay = String.valueOf(accViewModel.getAccelerometer().get(i).getAy());
                             String az = String.valueOf(accViewModel.getAccelerometer().get(i).getAz());
-                            String dataTime = accViewModel.getAccelerometer().get(i).getDateTime();
-                            texto = texto + ax + ";" + ay + ";" + az + ";" + dataTime + "\n";
+                            String date = accViewModel.getAccelerometer().get(i).getDate();
+                            String time = accViewModel.getAccelerometer().get(i).getTime();
+                            text = text + time + "," + ax + "," + ay + "," + az + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "accLog.csv");
-                        accLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(accLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "accLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(gravViewModel.isOn()){
-                        String texto = "Gx" + ";Gy" + ";Gz" + ";Date and Time" + "\n";
+                        String text = "Sensor: Gravity" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Gx" + "," + "Gy" + "," + "Gz" + "," + "Date" + "\n";
                         for (int i = 0; i < gravViewModel.getGravity().size(); i++) {
                             String gx = String.valueOf(gravViewModel.getGravity().get(i).getGx());
                             String gy = String.valueOf(gravViewModel.getGravity().get(i).getGy());
                             String gz = String.valueOf(gravViewModel.getGravity().get(i).getGz());
-                            String dataTime = gravViewModel.getGravity().get(i).getDateTime();
-                            texto = texto + gx + ";" + gy + ";" + gz + ";" + dataTime + "\n";
+                            String date = gravViewModel.getGravity().get(i).getDate();
+                            String time = gravViewModel.getGravity().get(i).getTime();
+                            text = text + time + "," + gx + "," + gy + "," + gz + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "gravLog.csv");
-                        gravLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(gravLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "gravLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(gyroViewModel.isOn()){
-                        String texto = "Wx" + ";Wy" + ";Wz" + ";Date and Time" + "\n";
+                        String text = "Sensor: Gyroscope" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Wx" + "," + "Wy" + "," + "Wz" + "," + "Date" + "\n";
                         for (int i = 0; i < gyroViewModel.getGyroscope().size(); i++) {
                             String wx = String.valueOf(gyroViewModel.getGyroscope().get(i).getWx());
                             String wy = String.valueOf(gyroViewModel.getGyroscope().get(i).getWy());
                             String wz = String.valueOf(gyroViewModel.getGyroscope().get(i).getWz());
-                            String dataTime = gyroViewModel.getGyroscope().get(i).getDateTime();
-                            texto = texto + wx + ";" + wy + ";" + wz + ";" + dataTime + "\n";
+                            String date = gyroViewModel.getGyroscope().get(i).getDate();
+                            String time = gyroViewModel.getGyroscope().get(i).getTime();
+                            text = text + time + "," + wx + "," + wy + "," + wz + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "gyroLog.csv");
-                        gyroLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(gyroLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "gyroLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(motViewModel.isOn()){
-                        String texto = "Motion" + ";Date and Time" + "\n";
+                        String text = "Sensor: Motion Detection" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Motion" + "," + "Date" + "\n";
                         for (int i = 0; i < motViewModel.getMotion().size(); i++) {
                             String mot = String.valueOf(motViewModel.getMotion().get(i).getMotion());
-                            String dataTime = motViewModel.getMotion().get(i).getDateTime();
-                            texto = texto + mot + ";" + dataTime + "\n";
+                            String date = motViewModel.getMotion().get(i).getDate();
+                            String time = motViewModel.getMotion().get(i).getTime();
+                            text = text + time + "," + mot + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "motionLog.csv");
-                        motionLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(motionLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "motionLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(rotViewModel.isOn()){
-                        String texto = "Xsin" + ";Ysin" + ";Zsin" + ";Cos" + ";Estimated Heading Accuracy" + ";Date and Time" + "\n";
+                        String text = "Sensor: Rotation Vector" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Xsin" + "," + "Ysin" + "," + "Zsin" + "," + "Cos" + "," + "Estimated Heading Accuracy" + "," + "Date" + "\n";
                         for (int i = 0; i < rotViewModel.getRotation().size(); i++) {
                             String xsin = String.valueOf(rotViewModel.getRotation().get(i).getXsin());
                             String ysin = String.valueOf(rotViewModel.getRotation().get(i).getYsin());
                             String zsin = String.valueOf(rotViewModel.getRotation().get(i).getZsin());
                             String cos = String.valueOf(rotViewModel.getRotation().get(i).getCos());
                             String sha = String.valueOf(rotViewModel.getRotation().get(i).getSha());
-                            String dataTime = rotViewModel.getRotation().get(i).getDateTime();
-                            texto = texto + xsin + ";" + ysin + ";" + zsin + ";" + cos + ";" + sha + ";" + dataTime + "\n";
+                            String date = rotViewModel.getRotation().get(i).getDate();
+                            String time = rotViewModel.getRotation().get(i).getTime();
+                            text = text + time + "," + xsin + "," + ysin + "," + zsin + "," + cos + "," + sha + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "rotLog.csv");
-                        rotLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(rotLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "rotLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(stViewModel.isOn()){
-                        String texto = "StepCounter" + ";Date and Time" + "\n";
+                        String text = "Sensor: Step Counter" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "StepCounter" + "," + "Date" + "\n";
                         for (int i = 0; i < stViewModel.getStep().size(); i++) {
                             String step = String.valueOf(stViewModel.getStep().get(i).getStep());
-                            String dataTime = stViewModel.getStep().get(i).getDateTime();
-                            texto = texto + step + ";" + dataTime + "\n";
+                            String date = stViewModel.getStep().get(i).getDate();
+                            String time = stViewModel.getStep().get(i).getTime();
+                            text = text + time + "," + step + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "stepLog.csv");
-                        stepLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(stepLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        String fileName = "stepLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(gViewModel.isOn()){
+                        String text = "Sensor: Game Rotation Vector" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "gameX" + "," + "gameY" + "," + "gameZ" + "," + "Date" + "\n";
+                        for(int i = 0; i<gViewModel.getGame().size(); i++){
+                            String date = gViewModel.getGame().get(i).getDate();
+                            String time = gViewModel.getGame().get(i).getTime();
+                            float gameX = gViewModel.getGame().get(i).getGameX();
+                            float gameY = gViewModel.getGame().get(i).getGameY();
+                            float gameZ = gViewModel.getGame().get(i).getGameZ();
+                            text = text + time + "," + gameX + "," + gameY + "," + gameZ + "," + date + "\n";
                         }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        String fileName = "gameLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(magViewModel.isOn()){
+                        String text = "Sensor: Geomagnetic Field" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Xvalue" + "," + "Yvalue" + "," + "Zvalue" + "," + "Date" + "\n";
+                        for(int i = 0; i<magViewModel.getAllMagnetic().size(); i++){
+                            String date = magViewModel.getAllMagnetic().get(i).getDate();
+                            String time = magViewModel.getAllMagnetic().get(i).getTime();
+                            float xValue = magViewModel.getAllMagnetic().get(i).getValueX();
+                            float yValue = magViewModel.getAllMagnetic().get(i).getValueY();
+                            float zValue = magViewModel.getAllMagnetic().get(i).getValueZ();
+                            text = text + time + "," + xValue + "," + yValue + "," + zValue + "," + date + "\n";
                         }
+                        String fileName = "magneticLog.csv";
+                        writeFile(text, fileName);
+                    }
+                    if(proxViewModel.isOn()){
+                        String text = "Sensor: Proximity" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Distance" + "," + "Date" + "\n";
+                        for(int i = 0; i<proxViewModel.getAllProximity().size(); i++){
+                            String date = proxViewModel.getAllProximity().get(i).getDate();
+                            String time = proxViewModel.getAllProximity().get(i).getTime();
+                            float distance = proxViewModel.getAllProximity().get(i).getDistance();
+                            text = text + time + "," + distance + ","  + date + "\n";
+                        }
+                        String fileName = "proximityLog.csv";
+                        writeFile(text, fileName);
                     }
                     if(gpsViewModel.isOn()){
-                        String texto = "Latitude" + ";Longitude" + ";Date and TIme" + "\n";
+                        String text = "Sensor: GPS" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Latitude" + "," + "Longitude" + "," + "Altitude" + "," + "Speed" + "," + "Date" + "\n";
                         for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
-                            String longitude = String.valueOf(gpsViewModel.getGps().get(i).getLongitude());
-                            String latitude = String.valueOf(gpsViewModel.getGps().get(i).getLatitude());
-                            String dataTime = gpsViewModel.getGps().get(i).getDateTime();
-                            texto = texto + latitude + ";" + longitude + ";" + dataTime + "\n";
+                            double longitude = gpsViewModel.getGps().get(i).getLongitude();
+                            double latitude = gpsViewModel.getGps().get(i).getLatitude();
+                            double altitude = gpsViewModel.getGps().get(i).getAltitude();
+                            double speed = gpsViewModel.getGps().get(i).getSpeed();
+                            String date = gpsViewModel.getGps().get(i).getDate();
+                            String time = gpsViewModel.getGps().get(i).getTime();
+                            text = text + time + "," + latitude + "," + longitude + "," + altitude + "," + speed + "," + date + "\n";
                         }
-                        //Log.d("Textao: ", texto);
-                        File file = new File(requireActivity().getExternalFilesDir(null), "gpsLog.csv");
-                        gpsLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        uriList.add(gpsLog);
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-                            fos.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        String fileName = "gpsLog.csv";
+                        //File file = new File(requireActivity().getExternalFilesDir(null), "gpsLog.csv");
+                        //gpsLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
+                        //uriList.add(gpsLog);
+                        writeFile(text, fileName);
                     }
                     sensorBinding.shareButton.setBackgroundColor(Color.GREEN);
                     sensorBinding.shareButton.setClickable(true);
@@ -694,50 +1061,103 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    public void getDateTime(){
+        calendar = Calendar.getInstance();
+        timeFormat = new SimpleDateFormat("HH:mm:ss");
+        dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        date = dateFormat.format(calendar.getTime());
+        time = timeFormat.format(calendar.getTime());
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        calendar = Calendar.getInstance();
-        simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
-        dateTime = simpleDateFormat.format(calendar.getTime());
-        if(event.sensor.getStringType().equals("android.sensor.linear_acceleration")){
+        getDateTime();
+        Log.d("entrei aqui: ", "mudou alguma coisa");
+        if(event.sensor.equals(accelerometer)){
             float ax = event.values[0];
             float ay = event.values[1];
             float az = event.values[2];
-            roomSensors.entities.accelerometer acc = new accelerometer(ax, ay, az, dateTime);
+            roomSensors.entities.accelerometer acc = new accelerometer(ax, ay, az, date, time);
             accViewModel.insert(acc);
         }else{
-            if(event.sensor.getStringType().equals("android.sensor.gyroscope")){
+            if(event.sensor.equals(gyroscope)){
                 float wx = event.values[0];
                 float wy = event.values[1];
                 float wz = event.values[2];
-                roomSensors.entities.gyroscope gyro = new gyroscope(wx, wy, wz, dateTime);
+                roomSensors.entities.gyroscope gyro = new gyroscope(wx, wy, wz, date, time);
                 gyroViewModel.insert(gyro);
             }else{
-                if(event.sensor.getStringType().equals("android.sensor.gravity")){
+                if(event.sensor.equals(gravity)){
                     float gx = event.values[0];
                     float gy = event.values[1];
                     float gz = event.values[2];
-                    roomSensors.entities.gravity grav = new gravity(gx, gy, gz, dateTime);
+                    roomSensors.entities.gravity grav = new gravity(gx, gy, gz, date, time);
                     gravViewModel.insert(grav);
                 }else{
-                    if(event.sensor.getStringType().equals("android.sensor.rotation_vector")){
+                    if(event.sensor.equals(rotation)){
                         float xsin = event.values[0];
                         float ysin = event.values[1];
                         float zsin = event.values[2];
                         float cos = event.values[3];
                         float estimated = event.values[4];
-                        roomSensors.entities.rotation rot = new rotation(xsin, ysin, zsin, cos, estimated, dateTime);
+                        roomSensors.entities.rotation rot = new rotation(xsin, ysin, zsin, cos, estimated, date, time);
                         rotViewModel.insert(rot);
                     }else{
-                        if(event.sensor.getStringType().equals("android.sensor.step_counter")){
+                        if(event.sensor.equals(stepCounter)){
                             float st = event.values[0];
-                            roomSensors.entities.stepCounter step = new stepCounter(st, dateTime);
+                            roomSensors.entities.stepCounter step = new stepCounter(st, date, time);
                             stViewModel.insert(step);
                         }else{
-                            if(event.sensor.getStringType().equals("android.sensor.motion_detect")){
+                            if(event.sensor.equals(motion)){
                                 float moti = event.values[0];
-                                roomSensors.entities.motion mot = new motion(moti, dateTime);
+                                roomSensors.entities.motion mot = new motion(moti, date ,time);
                                 motViewModel.insert(mot);
+                            }else{
+                                if(event.sensor.equals(ambientTemperature)){
+                                    float temperature = event.values[0];
+                                    roomSensors.entities.ambientTemperature temp = new ambientTemperature(temperature, date, time);
+                                    ambViewModel.insert(temp);
+                                }else{
+                                    if(event.sensor.equals(illuminance)){
+                                        float light = event.values[0];
+                                        illuminance illu = new illuminance(light, date, time);
+                                        illuViewModel.insert(illu);
+                                    }else{
+                                        if(event.sensor.equals(pressure)){
+                                            float press = event.values[0];
+                                            pressure pressVal = new pressure(press, date, time);
+                                            pressViewModel.insert(pressVal);
+                                        }else{
+                                            if(event.sensor.equals(humidity)){
+                                                float relHum = event.values[0];
+                                                humidity hum = new humidity(relHum, date, time);
+                                                humViewModel.insert(hum);
+                                            }else{
+                                                if(event.sensor.equals(prox)){
+                                                    float distance = event.values[0];
+                                                    proximity prox = new proximity(distance, date, time);
+                                                    proxViewModel.insert(prox);
+                                                }else{
+                                                    if(event.sensor.equals(game)){
+                                                        float gameX = event.values[0];
+                                                        float gameY = event.values[1];
+                                                        float gameZ = event.values[2];
+                                                        gameRotation g = new gameRotation(gameX, gameY, gameZ, date, time);
+                                                        gViewModel.insert(g);
+                                                    }else{
+                                                        if(event.sensor.equals(magnetic)){
+                                                            float xValue = event.values[0];
+                                                            float yValue = event.values[1];
+                                                            float zValue = event.values[2];
+                                                            magneticField magnet = new magneticField(xValue, yValue, zValue, date, time);
+                                                            magViewModel.insert(magnet);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -750,7 +1170,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        Log.d("mudou acuracia: ", String.valueOf(accuracy));
     }
 
     @SuppressLint("MissingPermission")
@@ -767,10 +1187,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             Location lastLocation = locationResult.getLastLocation();
-            calendar = Calendar.getInstance();
-            simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
-            dateTime = simpleDateFormat.format(calendar.getTime());
-            gpsLocation gps = new gpsLocation(id, lastLocation.getLatitude(), lastLocation.getLongitude(), dateTime);
+            getDateTime();
+            gpsLocation gps = new gpsLocation(id, lastLocation.getLatitude(), lastLocation.getLongitude(), lastLocation.getSpeed(), lastLocation.getAltitude(), date, time);
             gpsViewModel.insert(gps);
         }
     };

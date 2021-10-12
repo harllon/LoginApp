@@ -40,11 +40,13 @@ import java.util.Objects;
 
 import Utils.passwordHash;
 import ViewModel.PersonViewModel;
+import ViewModel.sensorViewModel;
 import roomTest.Person;
 
-public class HomeFragment extends Fragment implements SensorEventListener {
+public class HomeFragment extends Fragment {
     private FragmentHomeBinding homeBinding;
     private PersonViewModel mPersonViewModel;
+    private sensorViewModel ssViewModel;
     private List<Person> listUsers;
     //private NavHostFragment navigation;
     public HomeFragment() {
@@ -69,6 +71,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
         mPersonViewModel = new ViewModelProvider(this).get(PersonViewModel.class);
+        ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
         mPersonViewModel.getAllPerson().observe(getViewLifecycleOwner(), new Observer<List<Person>>() { //change: this -> getView
             @Override
             public void onChanged(List<Person> people) {
@@ -79,91 +82,10 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 }
             }
         });
-        /*
-        File file = new File(requireActivity().getExternalFilesDir(null), "testanto222.txt");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            String texto = "Estou tentando escrever nesse raio de arquivo";
-            fos.write(texto.getBytes(StandardCharsets.UTF_8));
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-        //FileInputStream fis = null;
-        /*
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String line = reader.readLine();
-            while (line != null) {
-                stringBuilder.append(line).append('\n');
-                line = reader.readLine();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            String contents = stringBuilder.toString();
-            Log.d("peguei", contents);
-        }
-        */
-       /* sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        if(sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null){
-            Log.d("verificando: ", "nao e nulo");
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-            sensorManager.registerListener(this, sensor, 5000000);
-        }*/
 
-
-
-        //Uri.fromFile(file);
-        //send(file);
         SignIn();
         SignUp();
     }
-    @Override
-    public final void onSensorChanged(SensorEvent event){
-        /*float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-        Log.d("axisX: ", String.valueOf(x));
-        Log.d("axisY: ", String.valueOf(y));
-        Log.d("axisZ: ", String.valueOf(z));*/
-
-    }
-    @Override
-    public final void onAccuracyChanged(Sensor sensor, int accuracy){}
-
-    /*void send(File file){
-        homeBinding.sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri txt = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);*/
-                //emailIntent.setType("*/*");
-                //emailIntent.setData(Uri.parse("mailto:"));
-               /* emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Opa legal");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "Tentando enviar do app");
-                emailIntent.putExtra(Intent.EXTRA_STREAM, txt);
-                //startActivity(Intent.createChooser(emailIntent, "Sending..."));
-                if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
-                    startActivity(emailIntent);
-                }
-            }
-        });
-    }*/
 
     void SignUp(){
         homeBinding.signupButton.setOnClickListener(new View.OnClickListener() {
@@ -206,10 +128,12 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         //Intent adminIntent = new Intent(getContext(), AdminActivity.class);
                         //startActivity(adminIntent);
                         //navigation.getNavController().navigate(R.id.adminFragment);
+                        ssViewModel.setAdmin(true);
                         Navigation.findNavController(requireView()).navigate(R.id.adminFragment);
                     }else{
                         //Intent normalIntent = new Intent(getContext(), NormalActivity.class);
                         //startActivity(normalIntent);
+                        ssViewModel.setAdmin(false);
                         Navigation.findNavController(requireView()).navigate(R.id.normalFragment);
                     }
                 }else{

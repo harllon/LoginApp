@@ -47,7 +47,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gpsLocationViewModel;
+import ViewModel.Motion.gpsLocationViewModel;
 import roomGPS.gpsLocation;
 
 
@@ -137,7 +137,7 @@ public class GpsFragment extends Fragment {
                 for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
                     String longitude = String.valueOf(gpsViewModel.getGps().get(i).getLongitude());
                     String latitude = String.valueOf(gpsViewModel.getGps().get(i).getLatitude());
-                    String dataTime = gpsViewModel.getGps().get(i).getDateTime();
+                    String dataTime = gpsViewModel.getGps().get(i).getDate();
                     texto = texto + "Latitude: " + latitude + "; Longitude: " + longitude + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -207,7 +207,7 @@ public class GpsFragment extends Fragment {
                                     calendar = Calendar.getInstance();
                                     simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
                                     dateTime = simpleDateFormat.format(calendar.getTime());
-                                    gpsLocation gps = new gpsLocation(id, newLocation.getLatitude(), newLocation.getLongitude(), dateTime);
+                                    gpsLocation gps = new gpsLocation(id, newLocation.getLatitude(), newLocation.getLongitude(), newLocation.getSpeed(), newLocation.getAltitude(), dateTime, dateTime);
                                     gpsViewModel.insert(gps);
                                     Log.d("myCord1", "Lat: " + newLocation.getLatitude() + " ,Lng: " + newLocation.getLongitude());
                                     Log.d("myCordSpeed", "Time: " + newLocation.getTime());
@@ -246,7 +246,7 @@ public class GpsFragment extends Fragment {
             calendar = Calendar.getInstance();
             simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
             dateTime = simpleDateFormat.format(calendar.getTime());
-            gpsLocation gps = new gpsLocation(id, lastLocation.getLatitude(), lastLocation.getLongitude(), dateTime);
+            gpsLocation gps = new gpsLocation(id, lastLocation.getLatitude(), lastLocation.getLongitude(), lastLocation.getSpeed(), lastLocation.getAltitude(), dateTime, dateTime);
             gpsViewModel.insert(gps);
             Log.d("myCord2", "Lat: " + lastLocation.getLatitude() + " ,Lng: " + lastLocation.getLongitude());
             Log.d("myCordSpeed2", "Time: " + lastLocation.getTime());

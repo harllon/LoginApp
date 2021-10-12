@@ -7,5 +7,6 @@ public enum sensorName {
     MOTION_DETECT,
     ROTATION_VECTOR,
     STEP_COUNTER,
-    GPS
+    GPS,
+    AMBIENT_TEMPERATURE
 }

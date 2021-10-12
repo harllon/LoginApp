@@ -35,9 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gravityViewModel;
-import ViewModel.stepViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.stepViewModel;
 import roomSensors.entities.stepCounter;
 
 public class StepFragment extends Fragment implements SensorEventListener {
@@ -149,7 +147,7 @@ public class StepFragment extends Fragment implements SensorEventListener {
                 String texto = "";
                 for (int i = 0; i < stViewModel.getStep().size(); i++) {
                     String step = String.valueOf(stViewModel.getStep().get(i).getStep());
-                    String dataTime = stViewModel.getStep().get(i).getDateTime();
+                    String dataTime = stViewModel.getStep().get(i).getDate();
                     texto = texto + "Step: " + step + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -195,7 +193,7 @@ public class StepFragment extends Fragment implements SensorEventListener {
         simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
         float st = event.values[0];
-        stepCounter step = new stepCounter(st, dateTime);
+        stepCounter step = new stepCounter(st, dateTime, dateTime);
         stViewModel.insert(step);
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.gpsRecyclerAdapter;
-import ViewModel.gpsLocationViewModel;
+import ViewModel.Motion.gpsLocationViewModel;
 import roomGPS.gpsLocation;
 
 

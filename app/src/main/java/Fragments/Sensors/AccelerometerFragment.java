@@ -35,7 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.accelerometerViewModel;
+import ViewModel.Motion.accelerometerViewModel;
 import ViewModel.sensorViewModel;
 import roomSensors.entities.accelerometer;
 
@@ -147,7 +147,7 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
                     String ax = String.valueOf(accViewModel.getAccelerometer().get(i).getAx());
                     String ay = String.valueOf(accViewModel.getAccelerometer().get(i).getAy());
                     String az = String.valueOf(accViewModel.getAccelerometer().get(i).getAz());
-                    String dataTime = accViewModel.getAccelerometer().get(i).getDateTime();
+                    String dataTime = accViewModel.getAccelerometer().get(i).getDate();
                     texto = texto + "Ax: " + ax + "; Ay: " + ay + "; Az: " + az + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -195,7 +195,7 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
         float ax = event.values[0];
         float ay = event.values[1];
         float az = event.values[2];
-        accelerometer acc = new accelerometer(ax, ay, az, dateTime);
+        accelerometer acc = new accelerometer(ax, ay, az, dateTime, dateTime);
         accViewModel.insert(acc);
         //Log.d("X: ", String.valueOf(x));
         //Log.d("Y: ", String.valueOf(y));

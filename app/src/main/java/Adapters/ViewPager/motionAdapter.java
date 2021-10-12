@@ -5,9 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import Fragments.Sensors.GravityFragment;
-import Fragments.Sensors.MotionFragment;
-import Fragments.Sensors.Saved.SavedGravityFragment;
+import Fragments.Sensors.MotiondetectFragment;
 import Fragments.Sensors.Saved.SavedMotionFragment;
 
 public class motionAdapter extends FragmentStateAdapter {
@@ -20,7 +18,7 @@ public class motionAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new MotionFragment();
+                return new MotiondetectFragment();
             case 1:
                 return new SavedMotionFragment();
             default:

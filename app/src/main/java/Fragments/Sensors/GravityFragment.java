@@ -35,7 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gravityViewModel;
+import ViewModel.Motion.gravityViewModel;
 import roomSensors.entities.gravity;
 
 public class GravityFragment extends Fragment implements SensorEventListener {
@@ -151,7 +151,7 @@ public class GravityFragment extends Fragment implements SensorEventListener {
                         String gx = String.valueOf(gravViewModel.getGravity().get(i).getGx());
                         String gy = String.valueOf(gravViewModel.getGravity().get(i).getGy());
                         String gz = String.valueOf(gravViewModel.getGravity().get(i).getGz());
-                        String dataTime = gravViewModel.getGravity().get(i).getDateTime();
+                        String dataTime = gravViewModel.getGravity().get(i).getDate();
                         texto = texto + "Gx: " + gx + "; Gy: " + gy + "; Gz: " + gz + "; Data and Time: " + dataTime + "\n";
                     }
                     Log.d("Textao: ", texto);
@@ -199,7 +199,7 @@ public class GravityFragment extends Fragment implements SensorEventListener {
         float gx = event.values[0];
         float gy = event.values[1];
         float gz = event.values[2];
-        gravity grav = new gravity(gx, gy, gz, dateTime);
+        gravity grav = new gravity(gx, gy, gz, dateTime, dateTime);
         gravViewModel.insert(grav);
         //Log.d("X: ", String.valueOf(x));
         //Log.d("Y: ", String.valueOf(y));

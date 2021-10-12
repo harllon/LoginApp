@@ -18,14 +18,18 @@ public class accelerometer {
     @ColumnInfo(name = "az")
     private float az;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public accelerometer(float ax, float ay, float az, String dateTime){
+    @ColumnInfo(name = "time")
+    private String time;
+
+    public accelerometer(float ax, float ay, float az, String date, String time){
         this.ax = ax;
         this.ay = ay;
         this.az = az;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.time = time;
     }
 
     public void setAz(float az) {
@@ -60,11 +64,20 @@ public class accelerometer {
         this.pk_id = pk_id;
     }
 
-    public String getDateTime() {
-        return dateTime;
+
+    public String getTime() {
+        return time;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

@@ -11,14 +11,14 @@ import android.view.ViewGroup;
 
 import com.example.myapplication.databinding.FragmentSaveBinding;
 
-import ViewModel.accelerometerViewModel;
-import ViewModel.gpsLocationViewModel;
-import ViewModel.gravityViewModel;
-import ViewModel.gyroscopeViewModel;
-import ViewModel.motionViewModel;
-import ViewModel.rotationViewModel;
+import ViewModel.Motion.accelerometerViewModel;
+import ViewModel.Motion.gpsLocationViewModel;
+import ViewModel.Motion.gravityViewModel;
+import ViewModel.Motion.gyroscopeViewModel;
+import ViewModel.Motion.motionViewModel;
+import ViewModel.Motion.rotationViewModel;
 import ViewModel.sensorViewModel;
-import ViewModel.stepViewModel;
+import ViewModel.Motion.stepViewModel;
 
 public class SaveFragment extends Fragment {
     private FragmentSaveBinding saveBinding;
@@ -52,8 +52,8 @@ public class SaveFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         svViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
         accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
-        String Title = "Save " + svViewModel.getSensor() + " File Page";
-        saveBinding.svTitleTV.setText(Title);
+        //String Title = "Save " + svViewModel.getSensor() + " File Page";
+        //saveBinding.svTitleTV.setText(Title);
         saveBinding.shareButton.setVisibility(View.INVISIBLE);
         /*String texto = "";
         for(int i = 0; i<accViewModel.getAccelerometer().size(); i++){

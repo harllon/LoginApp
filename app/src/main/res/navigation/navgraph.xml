@@ -37,7 +37,7 @@
         tools:layout="@layout/fragment_gyroscope" />
     <fragment
         android:id="@+id/motionFragment"
-        android:name="Fragments.Sensors.MotionFragment"
+        android:name="Fragments.Sensors.MotiondetectFragment"
         android:label="fragment_motion"
         tools:layout="@layout/fragment_motion" />
     <fragment
@@ -70,4 +70,14 @@
         android:name="Fragments.SensorFragment"
         android:label="fragment_sensor"
         tools:layout="@layout/fragment_sensor" />
+    <fragment
+        android:id="@+id/environmentFragment"
+        android:name="Fragments.EnvironmentFragment"
+        android:label="fragment_environment"
+        tools:layout="@layout/fragment_environment" />
+    <fragment
+        android:id="@+id/compassFragment"
+        android:name="Fragments.CompassFragment"
+        android:label="fragment_compass"
+        tools:layout="@layout/fragment_compass" />
 </navigation>

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import Adapters.RecyclerView.gravityRecyclerAdapter;
-import ViewModel.gravityViewModel;
+import ViewModel.Motion.gravityViewModel;
 import roomSensors.entities.gravity;
 
 public class SavedGravityFragment extends Fragment {

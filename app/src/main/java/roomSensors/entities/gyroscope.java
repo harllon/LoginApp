@@ -18,14 +18,18 @@ public class gyroscope {
     @ColumnInfo(name = "wz")
     private float wz;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public gyroscope(float wx, float wy, float wz, String dateTime){
+    @ColumnInfo(name = "time")
+    private String time;
+
+    public gyroscope(float wx, float wy, float wz, String date, String time){
         this.wx = wx;
         this.wy = wy;
         this.wz = wz;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.time = time;
     }
 
     public void setWz(float wz) {
@@ -60,11 +64,19 @@ public class gyroscope {
         this.pk_id = pk_id;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    public String getDate() {
+        return date;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

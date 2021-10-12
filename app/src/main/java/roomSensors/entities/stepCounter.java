@@ -12,12 +12,16 @@ public class stepCounter {
     @ColumnInfo(name = "step")
     private float step;
 
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public stepCounter(float step, String dateTime){
+    @ColumnInfo(name = "time")
+    private String time;
+
+    public stepCounter(float step, String date, String time){
         this.step = step;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.time = time;
     }
 
     public void setStep(float step) {
@@ -28,19 +32,27 @@ public class stepCounter {
         return step;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public int getPk_id() {
         return pk_id;
     }
 
     public void setPk_id(int pk_id) {
         this.pk_id = pk_id;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

@@ -18,14 +18,23 @@ public class gpsLocation {
     @NonNull
     @ColumnInfo(name = "longitude")
     private double longitude;
-    @ColumnInfo(name = "dateTime")
-    private String dateTime;
+    @ColumnInfo(name = "speed")
+    private double speed;
+    @ColumnInfo(name = "altitude")
+    private double altitude;
+    @ColumnInfo(name = "date")
+    private String date;
+    @ColumnInfo(name = "time")
+    private String time;
 
-    public gpsLocation(@NonNull int id, @NonNull double latitude, @NonNull double longitude, @NonNull String dateTime){
+    public gpsLocation(@NonNull int id, @NonNull double latitude, @NonNull double longitude, double speed, double altitude, @NonNull String date, String time){
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.time = time;
+        this.altitude = altitude;
+        this.speed = speed;
     }
 
     public void setId(int id) {
@@ -56,10 +65,35 @@ public class gpsLocation {
         return pk_id;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    public String getDate() {
+        return date;
     }
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public double getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
     }
 }

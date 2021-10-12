@@ -72,7 +72,7 @@ public class gpsRecyclerAdapter extends RecyclerView.Adapter<gpsRecyclerAdapter.
         //String id = String.valueOf(allGpsLocations.get(position).getId());
         String latitude = String.valueOf(allGpsLocations.get(position).getLatitude());
         String longitude = String.valueOf(allGpsLocations.get(position).getLongitude());
-        String dateTime = String.valueOf(allGpsLocations.get(position).getDateTime());
+        String dateTime = String.valueOf(allGpsLocations.get(position).getDate());
         holder.getDateTime().setText(dateTime);
         holder.getLatitude().setText(latitude);
         holder.getLongitude().setText(longitude);

@@ -1,4 +1,4 @@
-package ViewModel;
+package ViewModel.Motion;
 
 import android.app.Application;
 import android.os.Build;
@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 import roomSensors.entities.rotation;
@@ -30,6 +31,15 @@ public class rotationViewModel extends AndroidViewModel {
         super(application);
         hardwareRepository = new sensorRepository(application);
         allRotationSensor = hardwareRepository.getAllRotation();
+    }
+    private MutableLiveData<Boolean> isCheck = new MutableLiveData<>();
+
+    public MutableLiveData<Boolean> getIsCheck() {
+        return isCheck;
+    }
+
+    public void setIsCheck(Boolean check) {
+        isCheck.setValue(check);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

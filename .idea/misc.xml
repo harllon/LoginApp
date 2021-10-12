@@ -10,8 +10,10 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.16979166666666667" />
         <entry key="app/src/main/res/layout/activity_normal.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_options.xml" value="0.21" />
         <entry key="app/src/main/res/layout/activity_sensors.xml" value="0.21" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.290625" />
+        <entry key="app/src/main/res/layout/activity_track.xml" value="0.2911458333333333" />
         <entry key="app/src/main/res/layout/card_accelerometer.xml" value="0.30572916666666666" />
         <entry key="app/src/main/res/layout/card_gps.xml" value="0.30520833333333336" />
         <entry key="app/src/main/res/layout/card_gravity.xml" value="0.30572916666666666" />
@@ -21,13 +23,17 @@
         <entry key="app/src/main/res/layout/card_step.xml" value="0.30572916666666666" />
         <entry key="app/src/main/res/layout/fragment_accelerometer.xml" value="0.30572916666666666" />
         <entry key="app/src/main/res/layout/fragment_admin.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_compass.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/fragment_environment.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_gps.xml" value="0.30520833333333336" />
         <entry key="app/src/main/res/layout/fragment_gravity.xml" value="0.20847810979847117" />
         <entry key="app/src/main/res/layout/fragment_gyroscope.xml" value="0.15625" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.290625" />
         <entry key="app/src/main/res/layout/fragment_imu.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_motion.xml" value="0.15625" />
+        <entry key="app/src/main/res/layout/fragment_motion2.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_normal.xml" value="0.16979166666666667" />
+        <entry key="app/src/main/res/layout/fragment_position.xml" value="0.30572916666666666" />
         <entry key="app/src/main/res/layout/fragment_rotation.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/fragment_save.xml" value="0.30572916666666666" />
         <entry key="app/src/main/res/layout/fragment_saved_accelerometer.xml" value="0.25" />

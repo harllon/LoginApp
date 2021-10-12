@@ -20,9 +20,8 @@
         <item>10 seconds</item>
         <item>1 second</item>
         <item>0.2 seconds</item>
-        <item>0.02 seconds</item>
         <item>0.06 seconds</item>
-        <item>0 seconds</item>
+        <item>0.02 seconds</item>
     </string-array>
     <!--to toggle the open close button
         of the navigation drawer-->
@@ -55,4 +54,17 @@
     <string name="gyroscopeTitle">Gyroscope Sensor</string>
     <string name="shareButton">Share</string>
     <string name="fileName">Filename</string>
+    <string name="tempString">Ambient Temperature</string>
+    <string name="lightString">Illuminance</string>
+    <string name="pressureString">Ambient Pressure</string>
+    <string name="relhumString">Relative Humidity</string>
+    <string name="devTempString">Device Temperature</string>
+    <string name="startSensorString">Start Sensors</string>
+    <string name="environmentTitleString">Environment Sensors</string>
+    <string name="saveOptions">Save Options</string>
+    <string name="optionTitle">Sensors Selection</string>
+    <string name="optionSubtitle">Choose your Sensors</string>
+    <string name="gameRotation">Game Rotation</string>
+    <string name="magneticField">Magnetic Field</string>
+    <string name="proximity">Proximity</string>
 </resources>

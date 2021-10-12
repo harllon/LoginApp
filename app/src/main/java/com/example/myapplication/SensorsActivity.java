@@ -16,7 +16,7 @@ import Adapters.ViewPager.gyroscopeAdapter;
 import Adapters.ViewPager.motionAdapter;
 import Adapters.ViewPager.rotationAdapter;
 import Adapters.ViewPager.stepAdapter;
-import ViewModel.gravityViewModel;
+import ViewModel.Motion.gravityViewModel;
 
 public class SensorsActivity extends AppCompatActivity {
     private ActivitySensorsBinding sensorsBinding;

@@ -35,9 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.gravityViewModel;
-import ViewModel.gyroscopeViewModel;
-import roomSensors.entities.gravity;
+import ViewModel.Motion.gyroscopeViewModel;
 import roomSensors.entities.gyroscope;
 
 public class GyroscopeFragment extends Fragment implements SensorEventListener {
@@ -145,7 +143,7 @@ public class GyroscopeFragment extends Fragment implements SensorEventListener {
                     String wx = String.valueOf(gyroViewModel.getGyroscope().get(i).getWx());
                     String wy = String.valueOf(gyroViewModel.getGyroscope().get(i).getWy());
                     String wz = String.valueOf(gyroViewModel.getGyroscope().get(i).getWz());
-                    String dataTime = gyroViewModel.getGyroscope().get(i).getDateTime();
+                    String dataTime = gyroViewModel.getGyroscope().get(i).getDate();
                     texto = texto + "Wx: " + wx + "; Wy: " + wy + "; Wz: " + wz + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
@@ -193,7 +191,7 @@ public class GyroscopeFragment extends Fragment implements SensorEventListener {
         float wx = event.values[0];
         float wy = event.values[1];
         float wz = event.values[2];
-        gyroscope gyro = new gyroscope(wx, wy, wz, dateTime);
+        gyroscope gyro = new gyroscope(wx, wy, wz, dateTime, dateTime);
         gyroViewModel.insert(gyro);
         //Log.d("X: ", String.valueOf(x));
         //Log.d("Y: ", String.valueOf(y));
