@@ -138,6 +138,9 @@ public class PositionFragment extends Fragment {
             positionBinding.gameBox.setTextColor(Color.GRAY);
         }else{
             positionBinding.gameBox.setTextColor(Color.GREEN);
+            positionBinding.gameBox.setChecked(true);
+            gViewModel.setIsCheck(true);
+            gViewModel.setOn(true);
         }
 
         if(magneticManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) == null){
@@ -145,6 +148,9 @@ public class PositionFragment extends Fragment {
             positionBinding.magneticBox.setClickable(false);
         }else{
             positionBinding.magneticBox.setTextColor(Color.GREEN);
+            positionBinding.magneticBox.setChecked(true);
+            magViewModel.setIsCheck(true);
+            magViewModel.setOn(true);
         }
 
         if(proximityManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) == null){
@@ -152,6 +158,9 @@ public class PositionFragment extends Fragment {
             positionBinding.proximityBox.setClickable(false);
         }else{
             positionBinding.proximityBox.setTextColor(Color.GREEN);
+            positionBinding.proximityBox.setChecked(true);
+            proxViewModel.setIsCheck(true);
+            proxViewModel.setOn(true);
         }
     }
 }

@@ -40,9 +40,9 @@ public class OptionsActivity extends AppCompatActivity {
     private lightViewModel illuViewModel;
     private sensorViewModel ssViewModel;
 
-    private Boolean magbool;
-    private Boolean gyrobool;
-    private Boolean accbool;
+    private Boolean magbool = true;
+    private Boolean gyrobool = true;
+    private Boolean accbool = true;
 
 
     @Override
@@ -102,10 +102,12 @@ public class OptionsActivity extends AppCompatActivity {
                 if(aBoolean){
                     optionsBinding.sunlightBox.setClickable(true);
                     optionsBinding.sunlightBox.setTextColor(Color.GREEN);
+                    ssViewModel.setSunlightbool(true);
                 }else{
                     optionsBinding.sunlightBox.setClickable(false);
                     optionsBinding.sunlightBox.setChecked(false);
                     optionsBinding.sunlightBox.setTextColor(Color.GRAY);
+                    ssViewModel.setSunlightbool(false);
                 }
             }
         });
@@ -118,6 +120,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.altitudeBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setClickable(true);
+                    ssViewModel.setSpeedbool(true);
+                    ssViewModel.setAltitudebool(true);
                 }else{
                     optionsBinding.altitudeBox.setClickable(false);
                     optionsBinding.altitudeBox.setChecked(false);
@@ -125,6 +129,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.speedBox.setClickable(false);
                     optionsBinding.speedBox.setChecked(false);
                     optionsBinding.speedBox.setTextColor(Color.GRAY);
+                    ssViewModel.setSpeedbool(false);
+                    ssViewModel.setAltitudebool(false);
                 }
             }
         });
@@ -139,6 +145,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.rateBox.setTextColor(Color.GREEN);
                     optionsBinding.amplitudeBox.setClickable(true);
                     optionsBinding.amplitudeBox.setTextColor(Color.GREEN);
+                    ssViewModel.setAmplitudebool(true);
+                    ssViewModel.setRatebool(true);
                 }else{
                     optionsBinding.rateBox.setClickable(false);
                     optionsBinding.rateBox.setChecked(false);
@@ -146,6 +154,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.amplitudeBox.setClickable(false);
                     optionsBinding.amplitudeBox.setChecked(false);
                     optionsBinding.amplitudeBox.setTextColor(Color.GRAY);
+                    ssViewModel.setAmplitudebool(false);
+                    ssViewModel.setRatebool(false);
                 }
             }
         });
@@ -233,10 +243,12 @@ public class OptionsActivity extends AppCompatActivity {
         if(magbool && gyrobool && accbool){
             optionsBinding.nomotionBox.setClickable(true);
             optionsBinding.nomotionBox.setTextColor(Color.GREEN);
+            ssViewModel.setNomotionbool(true);
         }else{
             optionsBinding.nomotionBox.setChecked(false);
             optionsBinding.nomotionBox.setTextColor(Color.GRAY);
             optionsBinding.nomotionBox.setClickable(false);
+            ssViewModel.setNomotionbool(false);
         }
     }
 

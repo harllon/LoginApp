@@ -164,30 +164,6 @@ public class EnvironmentFragment extends Fragment {
         });
     }
 
-   /* public void startIsAvailable(){
-        if(envBinding.tempBox.isChecked() || envBinding.humidityBox.isChecked() || envBinding.lightBox.isChecked() || envBinding.pressureBox.isChecked()){
-            envBinding.envTrackButton.setClickable(true);
-            envBinding.envTrackButton.setBackgroundColor(Color.GREEN);
-        }else{
-            envBinding.envTrackButton.setClickable(false);
-            envBinding.envTrackButton.setBackgroundColor(Color.GRAY);
-        }
-    } */
-
-    /*public void sensorStart(){
-        envBinding.envTrackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(envBinding.envTrackButton.isClickable()){
-                    //Navigation.findNavController(requireView()).navigate(R.id.sensorFragment);
-                    //Intent track = new Intent(requireContext(), TrackActivity.class);
-                    //track.putExtra("ok", requireActivity());
-                    //startActivity(track);
-                    ssViewModel.setClicked(true);
-                }
-            }
-        });
-    }*/
 
     public void verifySensors(){
         ambTempManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -200,6 +176,9 @@ public class EnvironmentFragment extends Fragment {
             envBinding.tempBox.setTextColor(Color.GRAY);
         }else{
             envBinding.tempBox.setTextColor(Color.GREEN);
+            envBinding.tempBox.setChecked(true);
+            ambViewModel.setIsCheck(true);
+            ambViewModel.setOn(true);
         }
 
         if(lightManager.getDefaultSensor(Sensor.TYPE_LIGHT) == null){
@@ -207,6 +186,9 @@ public class EnvironmentFragment extends Fragment {
             envBinding.lightBox.setClickable(false);
         }else{
             envBinding.lightBox.setTextColor(Color.GREEN);
+            envBinding.lightBox.setChecked(true);
+            illuViewModel.setIsCheck(true);
+            illuViewModel.setOn(true);
         }
 
         if(pressureManager.getDefaultSensor(Sensor.TYPE_PRESSURE) == null){
@@ -214,6 +196,9 @@ public class EnvironmentFragment extends Fragment {
             envBinding.pressureBox.setClickable(false);
         }else{
             envBinding.pressureBox.setTextColor(Color.GREEN);
+            envBinding.pressureBox.setChecked(true);
+            pressViewModel.setIsCheck(true);
+            pressViewModel.setOn(true);
         }
 
         if(humidityManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) == null){
@@ -221,6 +206,9 @@ public class EnvironmentFragment extends Fragment {
             envBinding.humidityBox.setClickable(false);
         }else{
             envBinding.humidityBox.setTextColor(Color.GREEN);
+            envBinding.humidityBox.setChecked(true);
+            humViewModel.setIsCheck(true);
+            humViewModel.setOn(true);
         }
     }
 }

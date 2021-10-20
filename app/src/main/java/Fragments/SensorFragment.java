@@ -163,6 +163,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     private int rate;
     private int rate2;
 
+    private List<Float> illuValue = new ArrayList<>();
+
     public SensorFragment() {
         // Required empty public constructor
     }
@@ -774,6 +776,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
                     sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
                     sensorBinding.shareButton.setClickable(false);
+                    sensorBinding.startButton.setBackgroundColor(Color.GRAY);
+                    sensorBinding.startButton.setClickable(false);
                 }
             }
         });
@@ -844,13 +848,59 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     if(gpsViewModel.isOn()){
                         fusedLocationClient.removeLocationUpdates(locationCallback);
                     }
+                    writeMethods();
                     sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
                     sensorBinding.stopButton.setClickable(false);
                     sensorBinding.saveButton.setClickable(true);
                     sensorBinding.saveButton.setBackgroundColor(Color.GREEN);
+                    sensorBinding.startButton.setClickable(true);
+                    sensorBinding.startButton.setBackgroundColor(Color.GREEN);
                 }
             }
         });
+    }
+
+    public void writeMethods(){
+        if(ssViewModel.isSunlightbool()){
+            Boolean bool;
+            List<Float> listinha;
+            listinha = movingAverage(illuValue, 5);
+            String text = "SunLight Exposure" + "," + "rate: " + rate + "\n" + " Time" + "," + "Sunlight" + "," + "Date" + "\n";
+            for(int i = 0; i < listinha.size(); i++){
+                String date = String.valueOf(illuViewModel.getAllIlluminance().get(i).getDate());
+                String time = String.valueOf(illuViewModel.getAllIlluminance().get(i).getTime());
+                if(listinha.get(i) > 10000){
+                    bool = true;
+                }else{
+                    bool = false;
+                }
+                text = text + time + "," + bool + "," + date + "\n";
+            }
+            String filename = "sunlightMethod.csv";
+            writeFile(text, filename);
+        }
+        if(ssViewModel.isSpeedbool()){
+            String text = "Speed Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Speed" + "," + "Date" + "\n";
+            for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
+                double speed = gpsViewModel.getGps().get(i).getSpeed();
+                String date = gpsViewModel.getGps().get(i).getDate();
+                String time = gpsViewModel.getGps().get(i).getTime();
+                text = text + time + "," + speed + "," + date + "\n";
+            }
+            String fileName = "speedMethod.csv";
+            writeFile(text, fileName);
+        }
+        if(ssViewModel.isAmplitudebool()){
+            String text = "Altitude Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Altitude" + "," + "Date" + "\n";
+            for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
+                double altitude = gpsViewModel.getGps().get(i).getAltitude();
+                String date = gpsViewModel.getGps().get(i).getDate();
+                String time = gpsViewModel.getGps().get(i).getTime();
+                text = text + time + "," + altitude + "," + date + "\n";
+            }
+            String fileName = "altitudeMethod.csv";
+            writeFile(text, fileName);
+        }
     }
 
     public void writeFile(String text, String fileName){
@@ -1120,6 +1170,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                                 }else{
                                     if(event.sensor.equals(illuminance)){
                                         float light = event.values[0];
+                                        illuValue.add(light);
                                         illuminance illu = new illuminance(light, date, time);
                                         illuViewModel.insert(illu);
                                     }else{
@@ -1204,6 +1255,21 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     Boolean isLocationEnabled(){
         LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    List<Float> movingAverage(List<Float> lista, int window){
+        float sum = 0;
+        float average=0;
+        List<Float> result = new ArrayList<>();
+        for(int i = 0; i < lista.size() - window + 1; i++ ){
+            for(int j = 0; j < window; j++){
+                sum = sum + lista.get(i + j);
+            }
+            average = sum/window;
+            sum = 0;
+            result.add(average);
+        }
+        return result;
     }
   //  @Override
   /*  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){

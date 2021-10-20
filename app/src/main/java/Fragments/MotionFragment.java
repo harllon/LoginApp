@@ -241,6 +241,9 @@ public class MotionFragment extends Fragment {
             motionBinding.accBox.setTextColor(Color.GRAY);
         }else{
             motionBinding.accBox.setTextColor(Color.GREEN);
+            motionBinding.accBox.setChecked(true);
+            accViewModel.setIsCheck(true);
+            accViewModel.setOn(true);
         }
 
         if(gyroManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) == null){
@@ -248,6 +251,9 @@ public class MotionFragment extends Fragment {
             motionBinding.gyroBox.setTextColor(Color.GRAY);
         }else{
             motionBinding.gyroBox.setTextColor(Color.GREEN);
+            motionBinding.gyroBox.setChecked(true);
+            gyroViewModel.setIsCheck(true);
+            gyroViewModel.setOn(true);
         }
 
         if(gravManager.getDefaultSensor(Sensor.TYPE_GRAVITY) == null){
@@ -255,6 +261,9 @@ public class MotionFragment extends Fragment {
             motionBinding.gravBox.setClickable(false);
         }else{
             motionBinding.gravBox.setTextColor(Color.GREEN);
+            motionBinding.gravBox.setChecked(true);
+            gravViewModel.setIsCheck(true);
+            gravViewModel.setOn(true);
         }
 
         if(motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT) == null){
@@ -262,6 +271,9 @@ public class MotionFragment extends Fragment {
             motionBinding.motionBox.setTextColor(Color.GRAY);
         }else{
             motionBinding.motionBox.setTextColor(Color.GREEN);
+            motionBinding.motionBox.setChecked(true);
+            motViewModel.setIsCheck(true);
+            motViewModel.setOn(true);
         }
 
         if(rotationManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) == null){
@@ -269,6 +281,9 @@ public class MotionFragment extends Fragment {
             motionBinding.rotationBox.setTextColor(Color.GRAY);
         }else{
             motionBinding.rotationBox.setTextColor(Color.GREEN);
+            motionBinding.rotationBox.setChecked(true);
+            rotViewModel.setIsCheck(true);
+            rotViewModel.setOn(true);
         }
 
         if(stepcounterManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) == null){
@@ -276,7 +291,13 @@ public class MotionFragment extends Fragment {
             motionBinding.stepcounterBox.setTextColor(Color.GRAY);
         }else{
             motionBinding.stepcounterBox.setTextColor(Color.GREEN);
+            motionBinding.stepcounterBox.setChecked(true);
+            stViewModel.setIsCheck(true);
+            stViewModel.setOn(true);
         }
         motionBinding.gpsBox.setTextColor(Color.GREEN);
+        motionBinding.gpsBox.setChecked(true);
+        gpsViewModel.setIsCheck(true);
+        gpsViewModel.setOn(true);
     }
 }
