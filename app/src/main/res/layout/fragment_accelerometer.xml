@@ -4,7 +4,7 @@
     android:id="@+id/frameLayout8"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.Sensors.AccelerometerFragment">
+    tools:context="FragmentsNotUsed.Sensors.AccelerometerFragment">
 
     <TextView
         android:id="@+id/accelerometerTitle"

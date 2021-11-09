@@ -45,10 +45,12 @@ import roomTest.Person;
 
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding homeBinding;
+
     private PersonViewModel mPersonViewModel;
     private sensorViewModel ssViewModel;
+
     private List<Person> listUsers;
-    //private NavHostFragment navigation;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -65,13 +67,14 @@ public class HomeFragment extends Fragment {
         homeBinding = FragmentHomeBinding.inflate(inflater, container, false);
         return homeBinding.getRoot();
     }
-    private SensorManager sensorManager;
-    private Sensor sensor;
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+
         mPersonViewModel = new ViewModelProvider(this).get(PersonViewModel.class);
         ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
+
         mPersonViewModel.getAllPerson().observe(getViewLifecycleOwner(), new Observer<List<Person>>() { //change: this -> getView
             @Override
             public void onChanged(List<Person> people) {
@@ -87,6 +90,7 @@ public class HomeFragment extends Fragment {
         SignUp();
     }
 
+    //Function responsible to take the user to the signUp screen
     void SignUp(){
         homeBinding.signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +102,8 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    //Function responsible for the login
     void SignIn(){
         homeBinding.signinButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,16 +129,10 @@ public class HomeFragment extends Fragment {
                     }
                 }
                 if(checkUsername && checkPassword){
-                    //Toast.makeText(MainActivity.this, "The user exist", Toast.LENGTH_LONG).show();
                     if(checkAdmin){
-                        //Intent adminIntent = new Intent(getContext(), AdminActivity.class);
-                        //startActivity(adminIntent);
-                        //navigation.getNavController().navigate(R.id.adminFragment);
                         ssViewModel.setAdmin(true);
                         Navigation.findNavController(requireView()).navigate(R.id.adminFragment);
                     }else{
-                        //Intent normalIntent = new Intent(getContext(), NormalActivity.class);
-                        //startActivity(normalIntent);
                         ssViewModel.setAdmin(false);
                         Navigation.findNavController(requireView()).navigate(R.id.normalFragment);
                     }

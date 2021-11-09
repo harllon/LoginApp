@@ -2,15 +2,12 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.example.myapplication.databinding.ActivityOptionsBinding;
@@ -18,11 +15,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import Adapters.ViewPager.SensorOptionAdapter;
-import Adapters.ViewPager.gravityAdapter;
-import ViewModel.Environment.ambtempViewModel;
-import ViewModel.Environment.humidityViewModel;
 import ViewModel.Environment.lightViewModel;
-import ViewModel.Environment.pressureViewModel;
 import ViewModel.Motion.accelerometerViewModel;
 import ViewModel.Motion.gpsLocationViewModel;
 import ViewModel.Motion.gyroscopeViewModel;
@@ -31,7 +24,9 @@ import ViewModel.sensorViewModel;
 
 public class OptionsActivity extends AppCompatActivity {
     private ActivityOptionsBinding optionsBinding;
+
     private FragmentStateAdapter adapter;
+
 
     private accelerometerViewModel accViewModel;
     private gyroscopeViewModel gyroViewModel;
@@ -50,6 +45,9 @@ public class OptionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         optionsBinding = ActivityOptionsBinding.inflate(getLayoutInflater());
         setContentView(optionsBinding.getRoot());
+
+        //Setup of the ViewPager -> It's the responsible for the tab layout
+
         adapter = new SensorOptionAdapter(this);
         optionsBinding.optionViewPager.setAdapter(adapter);
         TabLayoutMediator tabMediatorOption = new TabLayoutMediator(optionsBinding.optionsGuia, optionsBinding.optionViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
@@ -67,47 +65,48 @@ public class OptionsActivity extends AppCompatActivity {
             }
         });
         tabMediatorOption.attach();
+
         startViewModel();
+        initialSetup();
         observeFunction();
         setBool();
+    }
 
-        ssViewModel.setAltitudebool(true);
-        ssViewModel.setRatebool(true);
-        ssViewModel.setSunlightbool(true);
-        ssViewModel.setAmplitudebool(true);
-        ssViewModel.setSpeedbool(true);
-        ssViewModel.setNomotionbool(true);
+    //This function is responsible to initialize the screen with the all the methods "on"
+    public void initialSetup(){
+        ssViewModel.setAltitudeBool(true);
+        ssViewModel.setCompassBool(true);
+        ssViewModel.setSunLightBool(true);
+        ssViewModel.setSpeedBool(true);
+        ssViewModel.setNoMotionBool(true);
 
         optionsBinding.altitudeBox.setChecked(true);
-        optionsBinding.amplitudeBox.setChecked(true);
+        optionsBinding.compassBox.setChecked(true);
         optionsBinding.nomotionBox.setChecked(true);
         optionsBinding.speedBox.setChecked(true);
-        optionsBinding.rateBox.setChecked(true);
         optionsBinding.sunlightBox.setChecked(true);
 
         optionsBinding.sunlightBox.setTextColor(Color.GREEN);
-        optionsBinding.rateBox.setTextColor(Color.GREEN);
+        optionsBinding.compassBox.setTextColor(Color.GREEN);
         optionsBinding.speedBox.setTextColor(Color.GREEN);
         optionsBinding.nomotionBox.setTextColor(Color.GREEN);
-        optionsBinding.amplitudeBox.setTextColor(Color.GREEN);
         optionsBinding.altitudeBox.setTextColor(Color.GREEN);
-
-
     }
+
+    //This function observes the sensors that are necessary for the methods. If the user turn off some sensors, the methods that need these sensors will turn off too.
     public void observeFunction(){
         illuViewModel.getIsCheck().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                //Log.d("oxe", String.valueOf(aBoolean));
                 if(aBoolean){
                     optionsBinding.sunlightBox.setClickable(true);
                     optionsBinding.sunlightBox.setTextColor(Color.GREEN);
-                    ssViewModel.setSunlightbool(true);
+                    ssViewModel.setSunLightBool(true);
                 }else{
                     optionsBinding.sunlightBox.setClickable(false);
                     optionsBinding.sunlightBox.setChecked(false);
                     optionsBinding.sunlightBox.setTextColor(Color.GRAY);
-                    ssViewModel.setSunlightbool(false);
+                    ssViewModel.setSunLightBool(false);
                 }
             }
         });
@@ -120,8 +119,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.altitudeBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setClickable(true);
-                    ssViewModel.setSpeedbool(true);
-                    ssViewModel.setAltitudebool(true);
+                    ssViewModel.setSpeedBool(true);
+                    ssViewModel.setAltitudeBool(true);
                 }else{
                     optionsBinding.altitudeBox.setClickable(false);
                     optionsBinding.altitudeBox.setChecked(false);
@@ -129,8 +128,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.speedBox.setClickable(false);
                     optionsBinding.speedBox.setChecked(false);
                     optionsBinding.speedBox.setTextColor(Color.GRAY);
-                    ssViewModel.setSpeedbool(false);
-                    ssViewModel.setAltitudebool(false);
+                    ssViewModel.setSpeedBool(false);
+                    ssViewModel.setAltitudeBool(false);
                 }
             }
         });
@@ -140,23 +139,7 @@ public class OptionsActivity extends AppCompatActivity {
             public void onChanged(Boolean aBoolean) {
                 accbool = aBoolean;
                 noMovementFunction();
-                if(aBoolean){
-                    optionsBinding.rateBox.setClickable(true);
-                    optionsBinding.rateBox.setTextColor(Color.GREEN);
-                    optionsBinding.amplitudeBox.setClickable(true);
-                    optionsBinding.amplitudeBox.setTextColor(Color.GREEN);
-                    ssViewModel.setAmplitudebool(true);
-                    ssViewModel.setRatebool(true);
-                }else{
-                    optionsBinding.rateBox.setClickable(false);
-                    optionsBinding.rateBox.setChecked(false);
-                    optionsBinding.rateBox.setTextColor(Color.GRAY);
-                    optionsBinding.amplitudeBox.setClickable(false);
-                    optionsBinding.amplitudeBox.setChecked(false);
-                    optionsBinding.amplitudeBox.setTextColor(Color.GRAY);
-                    ssViewModel.setAmplitudebool(false);
-                    ssViewModel.setRatebool(false);
-                }
+                compassFunction();
             }
         });
 
@@ -165,6 +148,7 @@ public class OptionsActivity extends AppCompatActivity {
             public void onChanged(Boolean aBoolean) {
                 magbool = aBoolean;
                 noMovementFunction();
+                compassFunction();
             }
         });
 
@@ -177,44 +161,36 @@ public class OptionsActivity extends AppCompatActivity {
         });
     }
 
+    //This function is responsible to report if the method is on or off using the ssViewModel(This information will be available in others sections of the code)
     public void setBool(){
         optionsBinding.nomotionBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(optionsBinding.nomotionBox.isChecked()){
-                    ssViewModel.setNomotionbool(true);
+                    ssViewModel.setNoMotionBool(true);
                 }else{
-                    ssViewModel.setNomotionbool(false);
+                    ssViewModel.setNoMotionBool(false);
                 }
             }
         });
-        optionsBinding.amplitudeBox.setOnClickListener(new View.OnClickListener() {
+        optionsBinding.compassBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(optionsBinding.amplitudeBox.isChecked()){
-                    ssViewModel.setAmplitudebool(true);
+                if(optionsBinding.compassBox.isChecked()){
+                    ssViewModel.setCompassBool(true);
                 }else{
-                    ssViewModel.setAmplitudebool(false);
+                    ssViewModel.setCompassBool(false);
                 }
             }
         });
-        optionsBinding.rateBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(optionsBinding.rateBox.isChecked()){
-                    ssViewModel.setRatebool(true);
-                }else{
-                    ssViewModel.setRatebool(false);
-                }
-            }
-        });
+
         optionsBinding.speedBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(optionsBinding.speedBox.isChecked()){
-                    ssViewModel.setSpeedbool(true);
+                    ssViewModel.setSpeedBool(true);
                 }else{
-                    ssViewModel.setSpeedbool(false);
+                    ssViewModel.setSpeedBool(false);
                 }
             }
         });
@@ -222,9 +198,9 @@ public class OptionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(optionsBinding.sunlightBox.isChecked()){
-                    ssViewModel.setSunlightbool(true);
+                    ssViewModel.setSunLightBool(true);
                 }else{
-                    ssViewModel.setSunlightbool(false);
+                    ssViewModel.setSunLightBool(false);
                 }
             }
         });
@@ -232,26 +208,42 @@ public class OptionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(optionsBinding.altitudeBox.isChecked()){
-                    ssViewModel.setAltitudebool(true);
+                    ssViewModel.setAltitudeBool(true);
                 }else{
-                    ssViewModel.setAltitudebool(false);
+                    ssViewModel.setAltitudeBool(false);
                 }
             }
         });
     }
+
+    //The next 2 functions make the same thing of the 2 above, but, it do this for the compass method and noMovement Method because they need more than 1 sensor on.
+    public void compassFunction(){
+        if(magbool && accbool){
+            optionsBinding.compassBox.setClickable(true);
+            optionsBinding.compassBox.setTextColor(Color.GREEN);
+            ssViewModel.setCompassBool(true);
+        }else{
+            optionsBinding.compassBox.setChecked(false);
+            optionsBinding.compassBox.setTextColor(Color.GRAY);
+            optionsBinding.compassBox.setClickable(false);
+            ssViewModel.setCompassBool(false);
+        }
+    }
+
     public void noMovementFunction(){
         if(magbool && gyrobool && accbool){
             optionsBinding.nomotionBox.setClickable(true);
             optionsBinding.nomotionBox.setTextColor(Color.GREEN);
-            ssViewModel.setNomotionbool(true);
+            ssViewModel.setNoMotionBool(true);
         }else{
             optionsBinding.nomotionBox.setChecked(false);
             optionsBinding.nomotionBox.setTextColor(Color.GRAY);
             optionsBinding.nomotionBox.setClickable(false);
-            ssViewModel.setNomotionbool(false);
+            ssViewModel.setNoMotionBool(false);
         }
     }
 
+    //This function initialize the viewModels.
     public void startViewModel(){
         magViewModel = new ViewModelProvider(this).get(magneticViewModel.class);
         accViewModel = new ViewModelProvider(this).get(accelerometerViewModel.class);

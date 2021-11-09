@@ -1,4 +1,4 @@
-package Fragments.Sensors.Saved;
+package FragmentsNotUsed.Sensors.Saved;
 
 import android.os.Bundle;
 

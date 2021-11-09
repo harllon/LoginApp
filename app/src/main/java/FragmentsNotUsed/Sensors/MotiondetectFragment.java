@@ -1,4 +1,4 @@
-package Fragments.Sensors;
+package FragmentsNotUsed.Sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.myapplication.databinding.FragmentAccelerometerBinding;
+import com.example.myapplication.databinding.FragmentMotionBinding;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,24 +35,21 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.Motion.accelerometerViewModel;
-import ViewModel.sensorViewModel;
-import roomSensors.entities.accelerometer;
+import ViewModel.Motion.motionViewModel;
+import roomSensors.entities.motion;
 
-
-public class AccelerometerFragment extends Fragment implements SensorEventListener {
-    private FragmentAccelerometerBinding accelerometerBinding;
-    private accelerometerViewModel accViewModel;
+public class MotiondetectFragment extends Fragment implements SensorEventListener {
+    private FragmentMotionBinding motionBinding;
+    private motionViewModel motViewModel;
     private Sensor sensor;
     private SensorManager sensorManager;
     private int rate;
-    private List<accelerometer> allAcc;
-    private sensorViewModel svViewModel;
+    private List<motion> allMotion;
     String dateTime;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat;
-    private Uri accLog;
-    public AccelerometerFragment() {
+    private Uri motionLog;
+    public MotiondetectFragment() {
         // Required empty public constructor
     }
 
@@ -65,33 +62,32 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        accelerometerBinding = FragmentAccelerometerBinding.inflate(inflater, container, false);
-        return accelerometerBinding.getRoot();
+        motionBinding = FragmentMotionBinding.inflate(inflater, container, false);
+        return motionBinding.getRoot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
-        svViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
+        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        if(sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null){
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT) != null){
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT);
         }else{
             Toast.makeText(requireContext(), "This cellphone doesn't have this hardware", Toast.LENGTH_LONG).show();
         }
-        accViewModel.getAllAccelerometer().observe(getViewLifecycleOwner(), new Observer<List<accelerometer>>() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+        motViewModel.getAllMotion().observe(getViewLifecycleOwner(), new Observer<List<motion>>() {
             @Override
-            public void onChanged(List<accelerometer> accelerometers) {
-                allAcc = Objects.requireNonNull(accelerometers);
-                accViewModel.updateList(allAcc);
+            public void onChanged(List<motion> motions) {
+                allMotion = Objects.requireNonNull(motions);
+                motViewModel.updateList(allMotion);
             }
         });
-        accelerometerBinding.stopAccelerometerButton.setVisibility(View.INVISIBLE);
-        accelerometerBinding.saveAccelerometerButton.setVisibility(View.INVISIBLE);
-        accelerometerBinding.startAccelerometerButton.setVisibility(View.INVISIBLE);
-        accelerometerBinding.shareButton.setVisibility(View.INVISIBLE);
+        motionBinding.stopMotionButton.setVisibility(View.INVISIBLE);
+        motionBinding.saveMotionButton.setVisibility(View.INVISIBLE);
+        motionBinding.startMotionButton.setVisibility(View.INVISIBLE);
+        motionBinding.shareButton.setVisibility(View.INVISIBLE);
         startTracking(this);
         stopTracking(this);
         save();
@@ -99,36 +95,37 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
         share();
     }
 
-    public void startTracking(AccelerometerFragment t){
-        accelerometerBinding.startAccelerometerButton.setOnClickListener(new View.OnClickListener() {
+
+    public void startTracking(MotiondetectFragment t){
+        motionBinding.startMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accelerometerBinding.saveAccelerometerButton.setVisibility(View.INVISIBLE);
-                accelerometerBinding.shareButton.setVisibility(View.INVISIBLE);
+                motionBinding.saveMotionButton.setVisibility(View.INVISIBLE);
+                motionBinding.shareButton.setVisibility(View.INVISIBLE);
                 sensorManager.registerListener((SensorEventListener) t, sensor, rate);  //possivel causa de problemas
             }
         });
     }
 
-    public void stopTracking(AccelerometerFragment t){
-        accelerometerBinding.stopAccelerometerButton.setOnClickListener(new View.OnClickListener() {
+    public void stopTracking(MotiondetectFragment t){
+        motionBinding.stopMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accelerometerBinding.saveAccelerometerButton.setVisibility(View.VISIBLE);
+                motionBinding.saveMotionButton.setVisibility(View.VISIBLE);
                 sensorManager.unregisterListener((SensorEventListener) t);
             }
         });
     }
     public void share(){
-        accelerometerBinding.shareButton.setOnClickListener(new View.OnClickListener() {
+        motionBinding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("*/*");
                 //emailIntent.setData(Uri.parse("mailto:"));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Accelerometer Log file");
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Motion Log file");
                 // emailIntent.putExtra(Intent.EXTRA_TEXT, "Tentando enviar do app");
-                emailIntent.putExtra(Intent.EXTRA_STREAM, accLog);
+                emailIntent.putExtra(Intent.EXTRA_STREAM, motionLog);
                 //startActivity(Intent.createChooser(emailIntent, "Sending..."));
                 if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
                     startActivity(emailIntent);
@@ -136,23 +133,20 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
             }
         });
     }
-    public void save() {
-        accelerometerBinding.saveAccelerometerButton.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.P)
+    public void save(){
+        motionBinding.saveMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accelerometerBinding.shareButton.setVisibility(View.VISIBLE);
+                motionBinding.shareButton.setVisibility(View.VISIBLE);
                 String texto = "";
-                for (int i = 0; i < accViewModel.getAccelerometer().size(); i++) {
-                    String ax = String.valueOf(accViewModel.getAccelerometer().get(i).getAx());
-                    String ay = String.valueOf(accViewModel.getAccelerometer().get(i).getAy());
-                    String az = String.valueOf(accViewModel.getAccelerometer().get(i).getAz());
-                    String dataTime = accViewModel.getAccelerometer().get(i).getDate();
-                    texto = texto + "Ax: " + ax + "; Ay: " + ay + "; Az: " + az + "; Data and Time: " + dataTime + "\n";
+                for (int i = 0; i < motViewModel.getMotion().size(); i++) {
+                    String mot = String.valueOf(motViewModel.getMotion().get(i).getMotion());
+                    String dataTime = motViewModel.getMotion().get(i).getDate();
+                    texto = texto + "Motion: " + mot + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
-                File file = new File(requireActivity().getExternalFilesDir(null), "accLog.txt");
-                accLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
+                File file = new File(requireActivity().getExternalFilesDir(null), "motionLog.txt");
+                motionLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
@@ -172,15 +166,15 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
     }
 
     public void updateRate(){
-        accelerometerBinding.setAccelerometerButton.setOnClickListener(new View.OnClickListener() {
+        motionBinding.setMotionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accelerometerBinding.startAccelerometerButton.setVisibility(View.VISIBLE);
-                accelerometerBinding.stopAccelerometerButton.setVisibility(View.VISIBLE);
-                if(TextUtils.isEmpty(accelerometerBinding.updateAccelerometer.getText().toString())){
+                motionBinding.startMotionButton.setVisibility(View.VISIBLE);
+                motionBinding.stopMotionButton.setVisibility(View.VISIBLE);
+                if(TextUtils.isEmpty(motionBinding.updateMotion.getText().toString())){
                     Toast.makeText(requireContext(), "Please, write a rate", Toast.LENGTH_LONG).show();
                 }else{
-                    rate = Integer.parseInt(accelerometerBinding.updateAccelerometer.getText().toString());
+                    rate = Integer.parseInt(motionBinding.updateMotion.getText().toString());
                     Log.d("valor da rate: ", String.valueOf(rate));
                 }
             }
@@ -192,14 +186,10 @@ public class AccelerometerFragment extends Fragment implements SensorEventListen
         calendar = Calendar.getInstance();
         simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
-        float ax = event.values[0];
-        float ay = event.values[1];
-        float az = event.values[2];
-        accelerometer acc = new accelerometer(ax, ay, az, dateTime, dateTime);
-        accViewModel.insert(acc);
-        //Log.d("X: ", String.valueOf(x));
-        //Log.d("Y: ", String.valueOf(y));
-        //Log.d("Z: ", String.valueOf(z));
+        float moti = event.values[0];
+        motion mot = new motion(moti, dateTime, dateTime);
+        motViewModel.insert(mot);
+
     }
 
     @Override

@@ -37,7 +37,7 @@
             app:titleTextColor="#ffff" />
 
         <Button
-            android:id="@+id/apagarei"
+            android:id="@+id/sensors"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sensors Selection"
@@ -47,17 +47,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.458" />
-
-        <Button
-            android:id="@+id/compassButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Compass"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.191"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.547" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

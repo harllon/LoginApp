@@ -23,6 +23,7 @@ public class SignupActivity extends AppCompatActivity {
     private ActivitySignupBinding sign_binding;
     private PersonViewModel mPersonViewModel;
     private List<Person> listUsers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +32,7 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(sign_binding.getRoot());
         Boolean admin = getIntent().getBooleanExtra("admin", false);
 
+        //Get all the existent users
         mPersonViewModel.getAllPerson().observe(this, new Observer<List<Person>>() {
             @Override
             public void onChanged(List<Person> people) {
@@ -42,10 +44,12 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        signup(admin);
-        returnSignin();
+        signUp(admin);
+        returnSignIn();
     }
-    void returnSignin(){
+
+    //Return for the Login Screen
+    void returnSignIn(){
         sign_binding.returnBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +58,9 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
-    private void signup(Boolean admin){
+
+    //Main function for the signUp
+    private void signUp(Boolean admin){
         sign_binding.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +96,6 @@ public class SignupActivity extends AppCompatActivity {
                             Toast.makeText(SignupActivity.this, "This email is invalid", Toast.LENGTH_LONG).show();
                         }
                     }
-                    //here i need to study how to use a try and catch to get the exception caused by existent username
                 }
             }
         });

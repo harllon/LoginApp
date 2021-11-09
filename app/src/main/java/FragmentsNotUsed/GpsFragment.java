@@ -1,4 +1,4 @@
-package Fragments;
+package FragmentsNotUsed;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

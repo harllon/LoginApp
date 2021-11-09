@@ -1,4 +1,4 @@
-package Fragments.Sensors;
+package FragmentsNotUsed.Sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.myapplication.databinding.FragmentMotionBinding;
+import com.example.myapplication.databinding.FragmentStepBinding;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,59 +35,63 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.Motion.motionViewModel;
-import roomSensors.entities.motion;
+import ViewModel.Motion.stepViewModel;
+import roomSensors.entities.stepCounter;
 
-public class MotiondetectFragment extends Fragment implements SensorEventListener {
-    private FragmentMotionBinding motionBinding;
-    private motionViewModel motViewModel;
+public class StepFragment extends Fragment implements SensorEventListener {
+
+    private FragmentStepBinding stepBinding;
+    private stepViewModel stViewModel;
     private Sensor sensor;
     private SensorManager sensorManager;
     private int rate;
-    private List<motion> allMotion;
+    private List<stepCounter> allStep;
     String dateTime;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat;
-    private Uri motionLog;
-    public MotiondetectFragment() {
+    private Uri stepLog;
+
+    public StepFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        motionBinding = FragmentMotionBinding.inflate(inflater, container, false);
-        return motionBinding.getRoot();
+        stepBinding = FragmentStepBinding.inflate(inflater, container, false);
+        return stepBinding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
+        stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        if(sensorManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT) != null){
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT);
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         }else{
             Toast.makeText(requireContext(), "This cellphone doesn't have this hardware", Toast.LENGTH_LONG).show();
         }
-        motViewModel.getAllMotion().observe(getViewLifecycleOwner(), new Observer<List<motion>>() {
+        stViewModel.getAllStep().observe(getViewLifecycleOwner(), new Observer<List<stepCounter>>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-            public void onChanged(List<motion> motions) {
-                allMotion = Objects.requireNonNull(motions);
-                motViewModel.updateList(allMotion);
+            public void onChanged(List<stepCounter> stepCounters) {
+                allStep = Objects.requireNonNull(stepCounters);
+                stViewModel.updateList(allStep);
             }
         });
-        motionBinding.stopMotionButton.setVisibility(View.INVISIBLE);
-        motionBinding.saveMotionButton.setVisibility(View.INVISIBLE);
-        motionBinding.startMotionButton.setVisibility(View.INVISIBLE);
-        motionBinding.shareButton.setVisibility(View.INVISIBLE);
+        stepBinding.stopStepButton.setVisibility(View.INVISIBLE);
+        stepBinding.saveStepButton.setVisibility(View.INVISIBLE);
+        stepBinding.startStepButton.setVisibility(View.INVISIBLE);
+        stepBinding.shareButton.setVisibility(View.INVISIBLE);
         startTracking(this);
         stopTracking(this);
         save();
@@ -96,36 +100,37 @@ public class MotiondetectFragment extends Fragment implements SensorEventListene
     }
 
 
-    public void startTracking(MotiondetectFragment t){
-        motionBinding.startMotionButton.setOnClickListener(new View.OnClickListener() {
+    public void startTracking(StepFragment t){
+        stepBinding.startStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                motionBinding.saveMotionButton.setVisibility(View.INVISIBLE);
-                motionBinding.shareButton.setVisibility(View.INVISIBLE);
+                stepBinding.saveStepButton.setVisibility(View.INVISIBLE);
+                stepBinding.shareButton.setVisibility(View.INVISIBLE);
                 sensorManager.registerListener((SensorEventListener) t, sensor, rate);  //possivel causa de problemas
             }
         });
     }
 
-    public void stopTracking(MotiondetectFragment t){
-        motionBinding.stopMotionButton.setOnClickListener(new View.OnClickListener() {
+    public void stopTracking(StepFragment t){
+        stepBinding.stopStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                motionBinding.saveMotionButton.setVisibility(View.VISIBLE);
+                stepBinding.saveStepButton.setVisibility(View.VISIBLE);
                 sensorManager.unregisterListener((SensorEventListener) t);
             }
         });
     }
+
     public void share(){
-        motionBinding.shareButton.setOnClickListener(new View.OnClickListener() {
+        stepBinding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("*/*");
                 //emailIntent.setData(Uri.parse("mailto:"));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Motion Log file");
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "StepCounter Log file");
                 // emailIntent.putExtra(Intent.EXTRA_TEXT, "Tentando enviar do app");
-                emailIntent.putExtra(Intent.EXTRA_STREAM, motionLog);
+                emailIntent.putExtra(Intent.EXTRA_STREAM, stepLog);
                 //startActivity(Intent.createChooser(emailIntent, "Sending..."));
                 if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
                     startActivity(emailIntent);
@@ -133,20 +138,21 @@ public class MotiondetectFragment extends Fragment implements SensorEventListene
             }
         });
     }
+
     public void save(){
-        motionBinding.saveMotionButton.setOnClickListener(new View.OnClickListener() {
+        stepBinding.saveStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                motionBinding.shareButton.setVisibility(View.VISIBLE);
+                stepBinding.shareButton.setVisibility(View.VISIBLE);
                 String texto = "";
-                for (int i = 0; i < motViewModel.getMotion().size(); i++) {
-                    String mot = String.valueOf(motViewModel.getMotion().get(i).getMotion());
-                    String dataTime = motViewModel.getMotion().get(i).getDate();
-                    texto = texto + "Motion: " + mot + "; Data and Time: " + dataTime + "\n";
+                for (int i = 0; i < stViewModel.getStep().size(); i++) {
+                    String step = String.valueOf(stViewModel.getStep().get(i).getStep());
+                    String dataTime = stViewModel.getStep().get(i).getDate();
+                    texto = texto + "Step: " + step + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
-                File file = new File(requireActivity().getExternalFilesDir(null), "motionLog.txt");
-                motionLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
+                File file = new File(requireActivity().getExternalFilesDir(null), "stepLog.txt");
+                stepLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
@@ -166,15 +172,15 @@ public class MotiondetectFragment extends Fragment implements SensorEventListene
     }
 
     public void updateRate(){
-        motionBinding.setMotionButton.setOnClickListener(new View.OnClickListener() {
+        stepBinding.setStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                motionBinding.startMotionButton.setVisibility(View.VISIBLE);
-                motionBinding.stopMotionButton.setVisibility(View.VISIBLE);
-                if(TextUtils.isEmpty(motionBinding.updateMotion.getText().toString())){
+                stepBinding.startStepButton.setVisibility(View.VISIBLE);
+                stepBinding.stopStepButton.setVisibility(View.VISIBLE);
+                if(TextUtils.isEmpty(stepBinding.updateStep.getText().toString())){
                     Toast.makeText(requireContext(), "Please, write a rate", Toast.LENGTH_LONG).show();
                 }else{
-                    rate = Integer.parseInt(motionBinding.updateMotion.getText().toString());
+                    rate = Integer.parseInt(stepBinding.updateStep.getText().toString());
                     Log.d("valor da rate: ", String.valueOf(rate));
                 }
             }
@@ -186,14 +192,14 @@ public class MotiondetectFragment extends Fragment implements SensorEventListene
         calendar = Calendar.getInstance();
         simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
-        float moti = event.values[0];
-        motion mot = new motion(moti, dateTime, dateTime);
-        motViewModel.insert(mot);
-
+        float st = event.values[0];
+        stepCounter step = new stepCounter(st, dateTime, dateTime);
+        stViewModel.insert(step);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }

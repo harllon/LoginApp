@@ -1,4 +1,4 @@
-package Fragments;
+package FragmentsNotUsed;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myapplication.SensorsActivity;
+import ActivitiesNotUsed.SensorsActivity;
 import com.example.myapplication.databinding.FragmentImuBinding;
 
 import ViewModel.Motion.gravityViewModel;

@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import Fragments.Sensors.MotiondetectFragment;
-import Fragments.Sensors.Saved.SavedMotionFragment;
+import FragmentsNotUsed.Sensors.MotiondetectFragment;
+import FragmentsNotUsed.Sensors.Saved.SavedMotionFragment;
 
 public class motionAdapter extends FragmentStateAdapter {
     public motionAdapter(@NonNull FragmentActivity fragmentActivity) {

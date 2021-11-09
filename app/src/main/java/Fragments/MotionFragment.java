@@ -67,6 +67,12 @@ public class MotionFragment extends Fragment {
         startViewModel();
         verifySensors();
         verifyBox();
+        observeViewModels();
+
+    }
+
+    //Verify if each box of motion sensor is on or off. If the box needs to turn off in a way different of the user action, this function will notice and update the box.
+    public void observeViewModels(){
         accViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -135,6 +141,7 @@ public class MotionFragment extends Fragment {
         gpsViewModel = new ViewModelProvider(requireActivity()).get(gpsLocationViewModel.class);
     }
 
+    //Set the information if the user turned on or turned off the box
     public void verifyBox(){
         motionBinding.accBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,6 +235,7 @@ public class MotionFragment extends Fragment {
         });
     }
 
+    //Verify if the sensors are available on the device and make the initial setup of color and check
     public void verifySensors(){
         accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);

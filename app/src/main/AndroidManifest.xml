@@ -17,13 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".TrackActivity"
-            android:exported="true" />
-        <activity
             android:name=".OptionsActivity"
             android:exported="true" />
         <activity
-            android:name=".SensorsActivity"
+            android:name="ActivitiesNotUsed.SensorsActivity"
             android:exported="true" />
 
         <provider
@@ -37,19 +34,10 @@
         </provider>
 
         <activity
-            android:name=".GpsActivity"
-            android:exported="true" />
-        <activity
-            android:name="ActivitiesNotUsed.MainActivity"
+            android:name="ActivitiesNotUsed.GpsActivity"
             android:exported="true" />
         <activity
             android:name=".SignupActivity"
-            android:exported="true" />
-        <activity
-            android:name="ActivitiesNotUsed.AdminActivity"
-            android:exported="true" />
-        <activity
-            android:name="ActivitiesNotUsed.NormalActivity"
             android:exported="true" />
         <activity android:name=".MainActivity2">
             <intent-filter>

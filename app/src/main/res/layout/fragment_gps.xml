@@ -4,7 +4,7 @@
     android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.GpsFragment">
+    tools:context="FragmentsNotUsed.GpsFragment">
 
     <Button
         android:id="@+id/startButton"

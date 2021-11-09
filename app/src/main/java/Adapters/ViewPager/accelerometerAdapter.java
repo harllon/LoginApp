@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import Fragments.Sensors.AccelerometerFragment;
-import Fragments.Sensors.Saved.SavedAccelerometerFragment;
+import FragmentsNotUsed.Sensors.AccelerometerFragment;
+import FragmentsNotUsed.Sensors.Saved.SavedAccelerometerFragment;
 
 
 public class accelerometerAdapter extends FragmentStateAdapter {

@@ -1,4 +1,4 @@
-package Fragments.Sensors;
+package FragmentsNotUsed.Sensors;
 
 import android.content.Context;
 import android.content.Intent;

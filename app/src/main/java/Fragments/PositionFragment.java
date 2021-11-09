@@ -58,7 +58,11 @@ public class PositionFragment extends Fragment {
         startViewModel();
         verifySensors();
         verifyBox();
+        observeViewModels();
+    }
 
+    //Verify if each box of position sensor is on or off. If the box needs to turn off in a way different of the user action, this function will notice and update the box.
+    public void observeViewModels(){
         proxViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -84,11 +88,14 @@ public class PositionFragment extends Fragment {
             }
         });
     }
+
     public void startViewModel(){
         proxViewModel = new ViewModelProvider(requireActivity()).get(proximityViewModel.class);
         gViewModel = new ViewModelProvider(requireActivity()).get(gameViewModel.class);
         magViewModel = new ViewModelProvider(requireActivity()).get(magneticViewModel.class);
     }
+
+    //Set the information if the user turned on or turned off the box
     public void verifyBox(){
         positionBinding.proximityBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +135,7 @@ public class PositionFragment extends Fragment {
         });
     }
 
+    //Verify if the sensors are available on the device and make the initial setup of color and check
     public void verifySensors(){
         gameManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         magneticManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);

@@ -1,4 +1,4 @@
-package Fragments;
+package FragmentsNotUsed;
 
 import android.os.Bundle;
 

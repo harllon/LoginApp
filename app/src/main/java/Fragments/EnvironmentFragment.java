@@ -1,7 +1,6 @@
 package Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -10,21 +9,17 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myapplication.R;
-import com.example.myapplication.TrackActivity;
 import com.example.myapplication.databinding.FragmentEnvironmentBinding;
 
 import ViewModel.Environment.ambtempViewModel;
 import ViewModel.Environment.humidityViewModel;
 import ViewModel.Environment.lightViewModel;
 import ViewModel.Environment.pressureViewModel;
-import ViewModel.sensorViewModel;
 
 public class EnvironmentFragment extends Fragment {
 
@@ -34,7 +29,6 @@ public class EnvironmentFragment extends Fragment {
     private humidityViewModel humViewModel;
     private lightViewModel illuViewModel;
     private pressureViewModel pressViewModel;
-    private sensorViewModel ssViewModel;
 
     private SensorManager ambTempManager;
     private SensorManager lightManager;
@@ -63,9 +57,13 @@ public class EnvironmentFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         startViewModel();
-        trackAvailability();
-        //sensorStart();
+        verifyBox();
         verifySensors();
+        observeViewModels();
+    }
+
+    //Verify if each box of environment sensor is on or off. If the box needs to turn off in a way different of the user action, this function will notice and update the box.
+    public void observeViewModels(){
         illuViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -99,14 +97,16 @@ public class EnvironmentFragment extends Fragment {
             }
         });
     }
+
     public void startViewModel(){
-        ssViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
         ambViewModel = new ViewModelProvider(requireActivity()).get(ambtempViewModel.class);
         pressViewModel = new ViewModelProvider(requireActivity()).get(pressureViewModel.class);
         humViewModel = new ViewModelProvider(requireActivity()).get(humidityViewModel.class);
         illuViewModel = new ViewModelProvider(requireActivity()).get(lightViewModel.class);
     }
-    public void trackAvailability(){
+
+    //Set the information if the user turned on or turned off the box
+    public void verifyBox(){
         envBinding.tempBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +117,6 @@ public class EnvironmentFragment extends Fragment {
                     ambViewModel.setOn(false);
                     ambViewModel.setIsCheck(false);
                 }
-               // startIsAvailable();
             }
         });
 
@@ -131,7 +130,6 @@ public class EnvironmentFragment extends Fragment {
                     humViewModel.setOn(false);
                     humViewModel.setIsCheck(false);
                 }
-                //startIsAvailable();
             }
         });
 
@@ -145,7 +143,6 @@ public class EnvironmentFragment extends Fragment {
                     pressViewModel.setOn(false);
                     pressViewModel.setIsCheck(false);
                 }
-               // startIsAvailable();
             }
         });
 
@@ -159,12 +156,11 @@ public class EnvironmentFragment extends Fragment {
                     illuViewModel.setOn(false);
                     illuViewModel.setIsCheck(false);
                 }
-               // startIsAvailable();
             }
         });
     }
 
-
+    //Verify if the sensors are available on the device and make the initial setup of color and check
     public void verifySensors(){
         ambTempManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         lightManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);

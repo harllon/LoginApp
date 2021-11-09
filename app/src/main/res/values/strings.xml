@@ -17,8 +17,6 @@
 
     <string-array name="time_array">
         <item>Rate</item>
-        <item>10 seconds</item>
-        <item>1 second</item>
         <item>0.2 seconds</item>
         <item>0.06 seconds</item>
         <item>0.02 seconds</item>

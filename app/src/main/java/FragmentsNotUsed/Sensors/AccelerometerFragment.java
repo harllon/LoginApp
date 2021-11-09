@@ -1,4 +1,4 @@
-package Fragments.Sensors;
+package FragmentsNotUsed.Sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.myapplication.databinding.FragmentStepBinding;
+import com.example.myapplication.databinding.FragmentAccelerometerBinding;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,63 +35,63 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import ViewModel.Motion.stepViewModel;
-import roomSensors.entities.stepCounter;
+import ViewModel.Motion.accelerometerViewModel;
+import ViewModel.sensorViewModel;
+import roomSensors.entities.accelerometer;
 
-public class StepFragment extends Fragment implements SensorEventListener {
 
-    private FragmentStepBinding stepBinding;
-    private stepViewModel stViewModel;
+public class AccelerometerFragment extends Fragment implements SensorEventListener {
+    private FragmentAccelerometerBinding accelerometerBinding;
+    private accelerometerViewModel accViewModel;
     private Sensor sensor;
     private SensorManager sensorManager;
     private int rate;
-    private List<stepCounter> allStep;
+    private List<accelerometer> allAcc;
+    private sensorViewModel svViewModel;
     String dateTime;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat;
-    private Uri stepLog;
-
-    public StepFragment() {
+    private Uri accLog;
+    public AccelerometerFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        stepBinding = FragmentStepBinding.inflate(inflater, container, false);
-        return stepBinding.getRoot();
+        accelerometerBinding = FragmentAccelerometerBinding.inflate(inflater, container, false);
+        return accelerometerBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
+        accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
+        svViewModel = new ViewModelProvider(requireActivity()).get(sensorViewModel.class);
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null){
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         }else{
             Toast.makeText(requireContext(), "This cellphone doesn't have this hardware", Toast.LENGTH_LONG).show();
         }
-        stViewModel.getAllStep().observe(getViewLifecycleOwner(), new Observer<List<stepCounter>>() {
+        accViewModel.getAllAccelerometer().observe(getViewLifecycleOwner(), new Observer<List<accelerometer>>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-            public void onChanged(List<stepCounter> stepCounters) {
-                allStep = Objects.requireNonNull(stepCounters);
-                stViewModel.updateList(allStep);
+            public void onChanged(List<accelerometer> accelerometers) {
+                allAcc = Objects.requireNonNull(accelerometers);
+                accViewModel.updateList(allAcc);
             }
         });
-        stepBinding.stopStepButton.setVisibility(View.INVISIBLE);
-        stepBinding.saveStepButton.setVisibility(View.INVISIBLE);
-        stepBinding.startStepButton.setVisibility(View.INVISIBLE);
-        stepBinding.shareButton.setVisibility(View.INVISIBLE);
+        accelerometerBinding.stopAccelerometerButton.setVisibility(View.INVISIBLE);
+        accelerometerBinding.saveAccelerometerButton.setVisibility(View.INVISIBLE);
+        accelerometerBinding.startAccelerometerButton.setVisibility(View.INVISIBLE);
+        accelerometerBinding.shareButton.setVisibility(View.INVISIBLE);
         startTracking(this);
         stopTracking(this);
         save();
@@ -99,38 +99,36 @@ public class StepFragment extends Fragment implements SensorEventListener {
         share();
     }
 
-
-    public void startTracking(StepFragment t){
-        stepBinding.startStepButton.setOnClickListener(new View.OnClickListener() {
+    public void startTracking(AccelerometerFragment t){
+        accelerometerBinding.startAccelerometerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stepBinding.saveStepButton.setVisibility(View.INVISIBLE);
-                stepBinding.shareButton.setVisibility(View.INVISIBLE);
+                accelerometerBinding.saveAccelerometerButton.setVisibility(View.INVISIBLE);
+                accelerometerBinding.shareButton.setVisibility(View.INVISIBLE);
                 sensorManager.registerListener((SensorEventListener) t, sensor, rate);  //possivel causa de problemas
             }
         });
     }
 
-    public void stopTracking(StepFragment t){
-        stepBinding.stopStepButton.setOnClickListener(new View.OnClickListener() {
+    public void stopTracking(AccelerometerFragment t){
+        accelerometerBinding.stopAccelerometerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stepBinding.saveStepButton.setVisibility(View.VISIBLE);
+                accelerometerBinding.saveAccelerometerButton.setVisibility(View.VISIBLE);
                 sensorManager.unregisterListener((SensorEventListener) t);
             }
         });
     }
-
     public void share(){
-        stepBinding.shareButton.setOnClickListener(new View.OnClickListener() {
+        accelerometerBinding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("*/*");
                 //emailIntent.setData(Uri.parse("mailto:"));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "StepCounter Log file");
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Accelerometer Log file");
                 // emailIntent.putExtra(Intent.EXTRA_TEXT, "Tentando enviar do app");
-                emailIntent.putExtra(Intent.EXTRA_STREAM, stepLog);
+                emailIntent.putExtra(Intent.EXTRA_STREAM, accLog);
                 //startActivity(Intent.createChooser(emailIntent, "Sending..."));
                 if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
                     startActivity(emailIntent);
@@ -138,21 +136,23 @@ public class StepFragment extends Fragment implements SensorEventListener {
             }
         });
     }
-
-    public void save(){
-        stepBinding.saveStepButton.setOnClickListener(new View.OnClickListener() {
+    public void save() {
+        accelerometerBinding.saveAccelerometerButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View v) {
-                stepBinding.shareButton.setVisibility(View.VISIBLE);
+                accelerometerBinding.shareButton.setVisibility(View.VISIBLE);
                 String texto = "";
-                for (int i = 0; i < stViewModel.getStep().size(); i++) {
-                    String step = String.valueOf(stViewModel.getStep().get(i).getStep());
-                    String dataTime = stViewModel.getStep().get(i).getDate();
-                    texto = texto + "Step: " + step + "; Data and Time: " + dataTime + "\n";
+                for (int i = 0; i < accViewModel.getAccelerometer().size(); i++) {
+                    String ax = String.valueOf(accViewModel.getAccelerometer().get(i).getAx());
+                    String ay = String.valueOf(accViewModel.getAccelerometer().get(i).getAy());
+                    String az = String.valueOf(accViewModel.getAccelerometer().get(i).getAz());
+                    String dataTime = accViewModel.getAccelerometer().get(i).getDate();
+                    texto = texto + "Ax: " + ax + "; Ay: " + ay + "; Az: " + az + "; Data and Time: " + dataTime + "\n";
                 }
                 Log.d("Textao: ", texto);
-                File file = new File(requireActivity().getExternalFilesDir(null), "stepLog.txt");
-                stepLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
+                File file = new File(requireActivity().getExternalFilesDir(null), "accLog.txt");
+                accLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
@@ -172,15 +172,15 @@ public class StepFragment extends Fragment implements SensorEventListener {
     }
 
     public void updateRate(){
-        stepBinding.setStepButton.setOnClickListener(new View.OnClickListener() {
+        accelerometerBinding.setAccelerometerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stepBinding.startStepButton.setVisibility(View.VISIBLE);
-                stepBinding.stopStepButton.setVisibility(View.VISIBLE);
-                if(TextUtils.isEmpty(stepBinding.updateStep.getText().toString())){
+                accelerometerBinding.startAccelerometerButton.setVisibility(View.VISIBLE);
+                accelerometerBinding.stopAccelerometerButton.setVisibility(View.VISIBLE);
+                if(TextUtils.isEmpty(accelerometerBinding.updateAccelerometer.getText().toString())){
                     Toast.makeText(requireContext(), "Please, write a rate", Toast.LENGTH_LONG).show();
                 }else{
-                    rate = Integer.parseInt(stepBinding.updateStep.getText().toString());
+                    rate = Integer.parseInt(accelerometerBinding.updateAccelerometer.getText().toString());
                     Log.d("valor da rate: ", String.valueOf(rate));
                 }
             }
@@ -192,14 +192,18 @@ public class StepFragment extends Fragment implements SensorEventListener {
         calendar = Calendar.getInstance();
         simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aaa z");
         dateTime = simpleDateFormat.format(calendar.getTime());
-        float st = event.values[0];
-        stepCounter step = new stepCounter(st, dateTime, dateTime);
-        stViewModel.insert(step);
+        float ax = event.values[0];
+        float ay = event.values[1];
+        float az = event.values[2];
+        accelerometer acc = new accelerometer(ax, ay, az, dateTime, dateTime);
+        accViewModel.insert(acc);
+        //Log.d("X: ", String.valueOf(x));
+        //Log.d("Y: ", String.valueOf(y));
+        //Log.d("Z: ", String.valueOf(z));
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
 }

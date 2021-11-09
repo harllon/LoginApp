@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 
-import Fragments.Sensors.GyroscopeFragment;
-import Fragments.Sensors.Saved.SavedGyroscopeFragment;
+import FragmentsNotUsed.Sensors.GyroscopeFragment;
+import FragmentsNotUsed.Sensors.Saved.SavedGyroscopeFragment;
 
 public class gyroscopeAdapter extends FragmentStateAdapter {
     public gyroscopeAdapter(@NonNull FragmentActivity fragmentActivity) {

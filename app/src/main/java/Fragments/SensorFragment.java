@@ -164,6 +164,27 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     private int rate2;
 
     private List<Float> illuValue = new ArrayList<>();
+    private List<Float> accValue = new ArrayList<>();
+    private List<Float> gyroValue = new ArrayList<>();
+    private List<Float> azimuthValue = new ArrayList<>();
+    private List<Float> pitchValue = new ArrayList<>();
+    private List<Float> rollValue = new ArrayList<>();
+
+    float[] accelerometerReading = new float[3];
+    float[] magnetometerReading = new float[3];
+    float[] gyroscopeReading = new float[3];
+    float[] gravityReading = new float[3];
+    float[] rotationVectorReading = new float[3];
+    float[] stepCounterReading = new float[1];
+    float[] gameReading = new float[3];
+    float[] proximityReading = new float[1];
+    float[] illuminanceReading = new float[1];
+    float[] temperatureReading = new float[1];
+    float[] pressureReading = new float[1];
+    float[] motionReading = new float[1];
+    float[] humidityReading = new float[1];
+    final float[] rotationMatrix = new float[9];
+    final float[] orientationAngles = new float[3];
 
     public SensorFragment() {
         // Required empty public constructor
@@ -188,23 +209,66 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        gravManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        motionManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        rotationManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        stepcounterManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        tempManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        pressureManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        illuminanceManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        humidityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        gameManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        magneticManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        proximityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        //Setup the spinner with 3 possibles rates for sensors
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(), R.array.time_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sensorBinding.timeSpinner.setAdapter(adapter);
+        sensorBinding.timeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(parent.getItemAtPosition(position).equals("0.2 seconds")){
+                    sensorBinding.startButton.setClickable(true);
+                    sensorBinding.startButton.setBackgroundColor(Color.GREEN);
+                    rate = SensorManager.SENSOR_DELAY_NORMAL;
+                    rate2 = 200;
+                    Log.d("0.2", String.valueOf(rate));
+                }else{
+                    if(parent.getItemAtPosition(position).equals("0.02 seconds")){
+                        sensorBinding.startButton.setClickable(true);
+                        sensorBinding.startButton.setBackgroundColor(Color.GREEN);
+                        rate = SensorManager.SENSOR_DELAY_GAME;
+                        rate2 = 20;
+                        Log.d("0.02", String.valueOf(rate));
+                    }else{
+                        if(parent.getItemAtPosition(position).equals("0.06 seconds")){
+                            sensorBinding.startButton.setClickable(true);
+                            sensorBinding.startButton.setBackgroundColor(Color.GREEN);
+                            rate = SensorManager.SENSOR_DELAY_UI;
+                            rate2 = 60;
+                            Log.d("0.06", String.valueOf(rate));
+                        }else{
+                                    sensorBinding.startButton.setClickable(false);
+                                    sensorBinding.startButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.shareButton.setClickable(false);
+                                    sensorBinding.saveButton.setClickable(false);
+                                    sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
+                                    sensorBinding.stopButton.setClickable(false);
+                        }
+                    }
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        startViewModel();
+        initializeSensors();
+        firstSetup();
+        updateList();
+        startTracking(this);
+        stopTracking(this);
+        save();
+        share();
+        clear(this);
+        observeCheckbox();
 
+    }
+
+    //Initial setup of the buttons
+    public void firstSetup(){
         sensorBinding.startButton.setClickable(false);
         sensorBinding.startButton.setBackgroundColor(Color.GRAY);
         sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
@@ -223,79 +287,28 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         sensorBinding.clearButton.setVisibility(View.INVISIBLE);
         sensorBinding.title.setVisibility(View.VISIBLE);
         sensorBinding.subtitle.setVisibility(View.VISIBLE);
-
-
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(), R.array.time_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sensorBinding.timeSpinner.setAdapter(adapter);
-        sensorBinding.timeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(parent.getItemAtPosition(position).equals("10 seconds")){
-                    sensorBinding.startButton.setClickable(true);
-                    sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                    rate = 10000000;
-                    rate2 = 10000;
-                    Log.d("10", "10");
-                }else{
-                    if(parent.getItemAtPosition(position).equals("1 second")){
-                        sensorBinding.startButton.setClickable(true);
-                        sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                        rate = 1000000;
-                        rate2 = 1000;
-                        Log.d("1", "1");
-                    }else{
-                        if(parent.getItemAtPosition(position).equals("0.2 seconds")){
-                            sensorBinding.startButton.setClickable(true);
-                            sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                            rate = SensorManager.SENSOR_DELAY_NORMAL;
-                            rate2 = 200;
-                            Log.d("0.2", String.valueOf(rate));
-                        }else{
-                            if(parent.getItemAtPosition(position).equals("0.02 seconds")){
-                                sensorBinding.startButton.setClickable(true);
-                                sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                                rate = SensorManager.SENSOR_DELAY_GAME;
-                                rate2 = 20;
-                                Log.d("0.02", String.valueOf(rate));
-                            }else{
-                                if(parent.getItemAtPosition(position).equals("0.06 seconds")){
-                                    sensorBinding.startButton.setClickable(true);
-                                    sensorBinding.startButton.setBackgroundColor(Color.GREEN);
-                                    rate = SensorManager.SENSOR_DELAY_UI;
-                                    rate2 = 60;
-                                    Log.d("0.06", String.valueOf(rate));
-                                }else{
-                                    sensorBinding.startButton.setClickable(false);
-                                    sensorBinding.startButton.setBackgroundColor(Color.GRAY);
-                                    sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
-                                    sensorBinding.shareButton.setClickable(false);
-                                    sensorBinding.saveButton.setClickable(false);
-                                    sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
-                                    sensorBinding.stopButton.setBackgroundColor(Color.GRAY);
-                                    sensorBinding.stopButton.setClickable(false);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-        startViewModel();
-        updateList();
-        startTracking(this);
-        stopTracking(this);
-        save();
-        share();
-        clear(this);
-        observeCheckbox();
-
     }
 
+    public void initializeSensors(){
+        accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        gravManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        motionManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        rotationManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        stepcounterManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        tempManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        pressureManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        illuminanceManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        humidityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        gameManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        magneticManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        proximityManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+    }
+
+    //observe the changes in the checkbox passing every change for the respective viewModel
     public void observeCheckbox(){
         illuViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -410,6 +423,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    //This function is responsible to correctly change the status of each button based on the status of the boxes.
     public void showButtons(){
         if(ambViewModel.isOn() || humViewModel.isOn() || illuViewModel.isOn() || pressViewModel.isOn() || accViewModel.isOn() || gpsViewModel.isOn() || gravViewModel.isOn() || gyroViewModel.isOn() || motViewModel.isOn() || rotViewModel.isOn() || stViewModel.isOn() || proxViewModel.isOn() || magViewModel.isOn() || gViewModel.isOn()){
             sensorBinding.startButton.setVisibility(View.VISIBLE);
@@ -567,6 +581,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             }
         });
     }
+
+    //unregister all sensors
     public void removeAll(SensorFragment view){
         illuminanceManager.unregisterListener((SensorEventListener) view);
         tempManager.unregisterListener((SensorEventListener) view);
@@ -583,6 +599,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         gameManager.unregisterListener((SensorEventListener) view);
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
+
+    //Remove the cache data of others tracking
     public void clear(SensorFragment view){
         sensorBinding.clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -670,6 +688,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    //Initialize the tracking of all sensors and methods that are on
     public void startTracking(SensorFragment view){
         sensorBinding.startButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -783,6 +802,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    //Share the data collected
     public void share(){
         sensorBinding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -801,6 +821,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    //stop the tracking of all sensors and methods that were on
     public void stopTracking(SensorFragment view){
         sensorBinding.stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -860,26 +881,28 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
+    //Write the csv files with the informations of each method on
     public void writeMethods(){
-        if(ssViewModel.isSunlightbool()){
-            Boolean bool;
-            List<Float> listinha;
-            listinha = movingAverage(illuValue, 5);
+        if(ssViewModel.isSunLightBool()){
+            Boolean sunExposure;
+            List<Float> slidingList;
+            int windowSize = 5;
+            slidingList = movingAverage(illuValue, windowSize);
             String text = "SunLight Exposure" + "," + "rate: " + rate + "\n" + " Time" + "," + "Sunlight" + "," + "Date" + "\n";
-            for(int i = 0; i < listinha.size(); i++){
+            for(int i = 0; i < slidingList.size(); i++){
                 String date = String.valueOf(illuViewModel.getAllIlluminance().get(i).getDate());
                 String time = String.valueOf(illuViewModel.getAllIlluminance().get(i).getTime());
-                if(listinha.get(i) > 10000){
-                    bool = true;
+                if(slidingList.get(i) > 10000){
+                    sunExposure = true;
                 }else{
-                    bool = false;
+                    sunExposure = false;
                 }
-                text = text + time + "," + bool + "," + date + "\n";
+                text = text + time + "," + sunExposure + "," + date + "\n";
             }
             String filename = "sunlightMethod.csv";
             writeFile(text, filename);
         }
-        if(ssViewModel.isSpeedbool()){
+        if(ssViewModel.isSpeedBool()){
             String text = "Speed Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Speed" + "," + "Date" + "\n";
             for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
                 double speed = gpsViewModel.getGps().get(i).getSpeed();
@@ -890,7 +913,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             String fileName = "speedMethod.csv";
             writeFile(text, fileName);
         }
-        if(ssViewModel.isAmplitudebool()){
+        if(ssViewModel.isAltitudeBool()){
             String text = "Altitude Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Altitude" + "," + "Date" + "\n";
             for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
                 double altitude = gpsViewModel.getGps().get(i).getAltitude();
@@ -901,10 +924,42 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             String fileName = "altitudeMethod.csv";
             writeFile(text, fileName);
         }
+        if(ssViewModel.isNoMotionBool()){
+            String text = "No Motion Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Motion" + "," + "Date" + "\n";
+            Boolean motion;
+            List<Float> slidingAccList;
+            List<Float> slidingGyroList;
+            int windowSize = 5;
+            slidingAccList = movingAverage(accValue, windowSize);
+            slidingGyroList = movingAverage(gyroValue, windowSize);
+            for(int i = 0; i<slidingAccList.size(); i++){
+                String date = accViewModel.getAccelerometer().get(i).getDate();
+                String time = accViewModel.getAccelerometer().get(i).getTime();
+                if(slidingAccList.get(i) < 5 && slidingAccList.get(i) > -5 && slidingGyroList.get(i) > -5 && slidingGyroList.get(i) < 5){
+                    motion = false;
+                }else{
+                    motion = true;
+                }
+                text = text + time + "," + motion + "," + date + "\n";
+            }
+            String fileName = "noMotionMethod.csv";
+            writeFile(text, fileName);
+        }
+        if(ssViewModel.isCompassBool()){
+            String text = "Compass Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Azimuth" + "," + "Pitch" + "," + "Roll" + "," + "Date" + "\n";
+            for(int i=0; i<azimuthValue.size(); i++){
+                String date = accViewModel.getAccelerometer().get(i).getDate();
+                String time = accViewModel.getAccelerometer().get(i).getTime();
+                text = text + time + "," + azimuthValue.get(i) + "," + pitchValue.get(i) + "," + rollValue.get(i) + "," + date + "\n";
+            }
+
+            String fileName = "CompassMethod.csv";
+            writeFile(text, fileName);
+        }
     }
 
+    //write the csv files of each sensor tracked
     public void writeFile(String text, String fileName){
-        //CSVWriter writer = null;
         File file = new File(requireActivity().getExternalFilesDir(null), fileName);
         Uri log = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
         uriList.add(log);
@@ -924,6 +979,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         }
     }
 
+    //Save the data collected
     public void save(){
         sensorBinding.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1098,9 +1154,6 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                             text = text + time + "," + latitude + "," + longitude + "," + altitude + "," + speed + "," + date + "\n";
                         }
                         String fileName = "gpsLog.csv";
-                        //File file = new File(requireActivity().getExternalFilesDir(null), "gpsLog.csv");
-                        //gpsLog = FileProvider.getUriForFile(requireContext(), "com.example.myapplication.MainActivity2", file);
-                        //uriList.add(gpsLog);
                         writeFile(text, fileName);
                     }
                     sensorBinding.shareButton.setBackgroundColor(Color.GREEN);
@@ -1119,89 +1172,83 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         time = timeFormat.format(calendar.getTime());
     }
 
+    //Get the sensors values each time that occurs a change.
     @Override
     public void onSensorChanged(SensorEvent event) {
         getDateTime();
-        Log.d("entrei aqui: ", "mudou alguma coisa");
+        Log.d("Here: ", "something chenged");
         if(event.sensor.equals(accelerometer)){
-            float ax = event.values[0];
-            float ay = event.values[1];
-            float az = event.values[2];
-            roomSensors.entities.accelerometer acc = new accelerometer(ax, ay, az, date, time);
-            accViewModel.insert(acc);
+            accelerometerReading = event.values;
+            accelerometer accelerometerValue = new accelerometer(accelerometerReading[0], accelerometerReading[1], accelerometerReading[2], date, time);
+            accViewModel.insert(accelerometerValue);
+            if(ssViewModel.isCompassBool()){
+                getCompassValues();
+            }
         }else{
             if(event.sensor.equals(gyroscope)){
-                float wx = event.values[0];
-                float wy = event.values[1];
-                float wz = event.values[2];
-                roomSensors.entities.gyroscope gyro = new gyroscope(wx, wy, wz, date, time);
-                gyroViewModel.insert(gyro);
+                gyroscopeReading = event.values;
+                gyroscope gyroscopeValue = new gyroscope(gyroscopeReading[0], gyroscopeReading[1], gyroscopeReading[2], date, time);
+                gyroViewModel.insert(gyroscopeValue);
             }else{
                 if(event.sensor.equals(gravity)){
-                    float gx = event.values[0];
-                    float gy = event.values[1];
-                    float gz = event.values[2];
-                    roomSensors.entities.gravity grav = new gravity(gx, gy, gz, date, time);
-                    gravViewModel.insert(grav);
+                    gravityReading = event.values;
+                    gravity gravityValue = new gravity(gravityReading[0], gravityReading[1], gravityReading[2], date, time);
+                    gravViewModel.insert(gravityValue);
                 }else{
                     if(event.sensor.equals(rotation)){
-                        float xsin = event.values[0];
-                        float ysin = event.values[1];
-                        float zsin = event.values[2];
-                        float cos = event.values[3];
-                        float estimated = event.values[4];
-                        roomSensors.entities.rotation rot = new rotation(xsin, ysin, zsin, cos, estimated, date, time);
-                        rotViewModel.insert(rot);
+                        rotationVectorReading = event.values;
+                        rotation rotationValue = new rotation(rotationVectorReading[0], rotationVectorReading[1], rotationVectorReading[2], rotationVectorReading[3], rotationVectorReading[4], date, time);
+                        rotViewModel.insert(rotationValue);
                     }else{
                         if(event.sensor.equals(stepCounter)){
-                            float st = event.values[0];
-                            roomSensors.entities.stepCounter step = new stepCounter(st, date, time);
-                            stViewModel.insert(step);
+                            stepCounterReading = event.values;
+                            stepCounter stepCounterValue = new stepCounter(stepCounterReading[0], date, time);
+                            stViewModel.insert(stepCounterValue);
                         }else{
                             if(event.sensor.equals(motion)){
-                                float moti = event.values[0];
-                                roomSensors.entities.motion mot = new motion(moti, date ,time);
-                                motViewModel.insert(mot);
+                                motionReading = event.values;
+                                motion motionValue = new motion(motionReading[0], date ,time);
+                                motViewModel.insert(motionValue);
                             }else{
                                 if(event.sensor.equals(ambientTemperature)){
-                                    float temperature = event.values[0];
-                                    roomSensors.entities.ambientTemperature temp = new ambientTemperature(temperature, date, time);
-                                    ambViewModel.insert(temp);
+                                    temperatureReading = event.values;
+                                    ambientTemperature temperatureValue = new ambientTemperature(temperatureReading[0], date, time);
+                                    ambViewModel.insert(temperatureValue);
                                 }else{
                                     if(event.sensor.equals(illuminance)){
-                                        float light = event.values[0];
-                                        illuValue.add(light);
-                                        illuminance illu = new illuminance(light, date, time);
-                                        illuViewModel.insert(illu);
+                                        illuminanceReading = event.values;
+                                        illuValue.add(illuminanceReading[0]);
+                                        illuminance illuminanceValue = new illuminance(illuminanceReading[0], date, time);
+                                        illuViewModel.insert(illuminanceValue);
                                     }else{
                                         if(event.sensor.equals(pressure)){
-                                            float press = event.values[0];
-                                            pressure pressVal = new pressure(press, date, time);
-                                            pressViewModel.insert(pressVal);
+                                            pressureReading = event.values;
+                                            pressure pressureValue = new pressure(pressureReading[0], date, time);
+                                            pressViewModel.insert(pressureValue);
                                         }else{
                                             if(event.sensor.equals(humidity)){
-                                                float relHum = event.values[0];
-                                                humidity hum = new humidity(relHum, date, time);
-                                                humViewModel.insert(hum);
+                                                humidityReading = event.values;
+                                                humidity humidityValue = new humidity(humidityReading[0], date, time);
+                                                humViewModel.insert(humidityValue);
                                             }else{
                                                 if(event.sensor.equals(prox)){
-                                                    float distance = event.values[0];
-                                                    proximity prox = new proximity(distance, date, time);
-                                                    proxViewModel.insert(prox);
+                                                    proximityReading = event.values;
+                                                    proximity proximityValue = new proximity(proximityReading[0], date, time);
+                                                    proxViewModel.insert(proximityValue);
                                                 }else{
                                                     if(event.sensor.equals(game)){
-                                                        float gameX = event.values[0];
-                                                        float gameY = event.values[1];
-                                                        float gameZ = event.values[2];
-                                                        gameRotation g = new gameRotation(gameX, gameY, gameZ, date, time);
-                                                        gViewModel.insert(g);
+                                                        gameReading = event.values;
+                                                        gameRotation gameValue = new gameRotation(gameReading[0], gameReading[1], gameReading[2], date, time);
+                                                        gViewModel.insert(gameValue);
                                                     }else{
                                                         if(event.sensor.equals(magnetic)){
-                                                            float xValue = event.values[0];
-                                                            float yValue = event.values[1];
-                                                            float zValue = event.values[2];
-                                                            magneticField magnet = new magneticField(xValue, yValue, zValue, date, time);
-                                                            magViewModel.insert(magnet);
+                                                            magnetometerReading = event.values;
+                                                            magneticField magneticValue = new magneticField(magnetometerReading[0], magnetometerReading[1], magnetometerReading[2], date, time);
+                                                            magViewModel.insert(magneticValue);
+                                                            if(ssViewModel.isCompassBool()){
+                                                                getCompassValues();
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1215,15 +1262,24 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                 }
             }
         }
+    }
 
-        //Log.d("opa: ", event.sensor.getStringType());
+    //Function that compute the compass method data
+    void getCompassValues(){
+        SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
+        SensorManager.getOrientation(rotationMatrix, orientationAngles);
+        azimuthValue.add((float) ( -orientationAngles[0]*180/3.1415));
+        pitchValue.add(orientationAngles[1]);
+        rollValue.add(orientationAngles[2]);
+
+        //compassBinding.pointer.setRotation((float) (-orientationAngles[0]*180/3.1415));
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        Log.d("mudou acuracia: ", String.valueOf(accuracy));
     }
 
+    //Everything below this point, except the moving average function, is to get the gps information.
     @SuppressLint("MissingPermission")
     void requestNewLocationData(){
         LocationRequest requestLocation = LocationRequest.create();
@@ -1271,13 +1327,5 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         }
         return result;
     }
-  //  @Override
-  /*  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == PERMISSION_ID){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-               startTracking();
-            }
-        }
-    }*/
+
 }
