@@ -677,7 +677,6 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     gViewModel.setIsCheck(false);
                 }
                 uriList.removeAll(uriList);
-                //ssViewModel.setClicked(false);
                 sensorBinding.shareButton.setClickable(false);
                 sensorBinding.shareButton.setBackgroundColor(Color.GRAY);
                 sensorBinding.saveButton.setBackgroundColor(Color.GRAY);
@@ -932,7 +931,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             int windowSize = 5;
             slidingAccList = movingAverage(accValue, windowSize);
             slidingGyroList = movingAverage(gyroValue, windowSize);
-            for(int i = 0; i<slidingAccList.size(); i++){
+            for(int i = 0; i<slidingGyroList.size(); i++){
                 String date = accViewModel.getAccelerometer().get(i).getDate();
                 String time = accViewModel.getAccelerometer().get(i).getTime();
                 if(slidingAccList.get(i) < 5 && slidingAccList.get(i) > -5 && slidingGyroList.get(i) > -5 && slidingGyroList.get(i) < 5){
@@ -947,7 +946,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         }
         if(ssViewModel.isCompassBool()){
             String text = "Compass Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Azimuth" + "," + "Pitch" + "," + "Roll" + "," + "Date" + "\n";
-            for(int i=0; i<azimuthValue.size(); i++){
+            for(int i=0; i<accViewModel.getAccelerometer().size(); i++){
                 String date = accViewModel.getAccelerometer().get(i).getDate();
                 String time = accViewModel.getAccelerometer().get(i).getTime();
                 text = text + time + "," + azimuthValue.get(i) + "," + pitchValue.get(i) + "," + rollValue.get(i) + "," + date + "\n";
@@ -1179,6 +1178,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         Log.d("Here: ", "something chenged");
         if(event.sensor.equals(accelerometer)){
             accelerometerReading = event.values;
+            accValue.add((float) Math.sqrt(accelerometerReading[0]*accelerometerReading[0] + accelerometerReading[1]*accelerometerReading[1] + accelerometerReading[2]*accelerometerReading[2]));
             accelerometer accelerometerValue = new accelerometer(accelerometerReading[0], accelerometerReading[1], accelerometerReading[2], date, time);
             accViewModel.insert(accelerometerValue);
             if(ssViewModel.isCompassBool()){
@@ -1187,6 +1187,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         }else{
             if(event.sensor.equals(gyroscope)){
                 gyroscopeReading = event.values;
+                gyroValue.add((float) Math.sqrt(gyroscopeReading[0]*gyroscopeReading[0] + gyroscopeReading[1]*gyroscopeReading[1] + gyroscopeReading[2]*gyroscopeReading[2]));
                 gyroscope gyroscopeValue = new gyroscope(gyroscopeReading[0], gyroscopeReading[1], gyroscopeReading[2], date, time);
                 gyroViewModel.insert(gyroscopeValue);
             }else{
@@ -1268,6 +1269,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     void getCompassValues(){
         SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
+        //Log.d("azimute: ", String.valueOf(orientationAngles[0]));
         azimuthValue.add((float) ( -orientationAngles[0]*180/3.1415));
         pitchValue.add(orientationAngles[1]);
         rollValue.add(orientationAngles[2]);

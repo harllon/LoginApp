@@ -56,10 +56,45 @@ public class EnvironmentFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
+
+
         startViewModel();
         verifyBox();
         verifySensors();
-        observeViewModels();
+        //observeViewModels();
+
+        illuViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    envBinding.lightBox.setChecked(false);
+                }
+            }
+        });
+        ambViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    envBinding.tempBox.setChecked(false);
+                }
+            }
+        });
+        pressViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    envBinding.pressureBox.setChecked(false);
+                }
+            }
+        });
+        humViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean){
+                    envBinding.humidityBox.setChecked(false);
+                }
+            }
+        });
     }
 
     //Verify if each box of environment sensor is on or off. If the box needs to turn off in a way different of the user action, this function will notice and update the box.
