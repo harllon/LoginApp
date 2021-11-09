@@ -5,10 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-
-import FragmentsNotUsed.Sensors.GravityFragment;
-import FragmentsNotUsed.Sensors.Saved.SavedGravityFragment;
-
 public class gravityAdapter extends FragmentStateAdapter {
     public gravityAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
