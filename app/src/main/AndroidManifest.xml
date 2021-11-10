@@ -16,6 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
+        <service
+            android:name="Fragments.SensorFragment"
+            android:foregroundServiceType="location">
+        </service>
         <activity
             android:name=".OptionsActivity"
             android:exported="true" />

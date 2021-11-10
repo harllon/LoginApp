@@ -15,11 +15,8 @@ public class gpsLocationRepository {
 
     public gpsLocationRepository(Application application){
         gpsLocationDatabase db = gpsLocationDatabase.getDatabase(application);
-        //PersonRoomDatabase db = PersonRoomDatabase.getDatabase(application);
         gpsDao = db.gpsDao();
         allGpsLocation = gpsDao.getAll();
-        //mPersonDao = db.personDao();
-        //mAllPerson = mPersonDao.getAll();
     }
 
     public LiveData<List<gpsLocation>> getAllGpsLocation(){

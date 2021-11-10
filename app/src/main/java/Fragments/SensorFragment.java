@@ -1142,15 +1142,13 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                         writeFile(text, fileName);
                     }
                     if(gpsViewModel.isOn()){
-                        String text = "Sensor: GPS" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Latitude" + "," + "Longitude" + "," + "Altitude" + "," + "Speed" + "," + "Date" + "\n";
+                        String text = "Sensor: GPS" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Latitude" + "," + "Longitude" + "," + "Date" + "\n";
                         for (int i = 0; i < gpsViewModel.getGps().size(); i++) {
                             double longitude = gpsViewModel.getGps().get(i).getLongitude();
                             double latitude = gpsViewModel.getGps().get(i).getLatitude();
-                            double altitude = gpsViewModel.getGps().get(i).getAltitude();
-                            double speed = gpsViewModel.getGps().get(i).getSpeed();
                             String date = gpsViewModel.getGps().get(i).getDate();
                             String time = gpsViewModel.getGps().get(i).getTime();
-                            text = text + time + "," + latitude + "," + longitude + "," + altitude + "," + speed + "," + date + "\n";
+                            text = text + time + "," + latitude + "," + longitude + "," + "," + date + "\n";
                         }
                         String fileName = "gpsLog.csv";
                         writeFile(text, fileName);
