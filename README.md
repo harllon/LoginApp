@@ -15,6 +15,8 @@ Speed: This method returns the speed(meters per second) of the user.
 No Motion: This method returns true if the user is in movement, otherwise it returns false. This method needs data from two sensors, the accelerometer and the gyroscope.
 Compass: This method returns the information of orientation of the user relative to the magnetic north. It's necessary the accelerometer and de magnetometer to implements this.
 
+All the sensors, except the GPS, can be tracked in background mode. The user can turn of the screen or press the home button that the sensors will continue the tracking until the user returns to the app and press the stop button.
+
 After the user select the sensors and methods that he/she wants and the rate, He/she can start the acquisition of data, stop it, save it and in the end it's possible to share the data. The share button has a lot of option to share the data, if the user chose the email to share the data, all the log files will be alredy attached on the email body.
 
 
