@@ -74,6 +74,7 @@ public class OptionsActivity extends AppCompatActivity {
 
     //This function is responsible to initialize the screen with the all the methods "on"
     public void initialSetup(){
+/*
         ssViewModel.setAltitudeBool(true);
         ssViewModel.setCompassBool(true);
         ssViewModel.setSunLightBool(true);
@@ -85,7 +86,7 @@ public class OptionsActivity extends AppCompatActivity {
         optionsBinding.nomotionBox.setChecked(true);
         optionsBinding.speedBox.setChecked(true);
         optionsBinding.sunlightBox.setChecked(true);
-
+*/
         optionsBinding.sunlightBox.setTextColor(Color.GREEN);
         optionsBinding.compassBox.setTextColor(Color.GREEN);
         optionsBinding.speedBox.setTextColor(Color.GREEN);
@@ -101,7 +102,7 @@ public class OptionsActivity extends AppCompatActivity {
                 if(aBoolean){
                     optionsBinding.sunlightBox.setClickable(true);
                     optionsBinding.sunlightBox.setTextColor(Color.GREEN);
-                    ssViewModel.setSunLightBool(true);
+                    //ssViewModel.setSunLightBool(true);
                 }else{
                     optionsBinding.sunlightBox.setClickable(false);
                     optionsBinding.sunlightBox.setChecked(false);
@@ -119,8 +120,8 @@ public class OptionsActivity extends AppCompatActivity {
                     optionsBinding.altitudeBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setTextColor(Color.GREEN);
                     optionsBinding.speedBox.setClickable(true);
-                    ssViewModel.setSpeedBool(true);
-                    ssViewModel.setAltitudeBool(true);
+                    //ssViewModel.setSpeedBool(true);
+                    //ssViewModel.setAltitudeBool(true);
                 }else{
                     optionsBinding.altitudeBox.setClickable(false);
                     optionsBinding.altitudeBox.setChecked(false);
