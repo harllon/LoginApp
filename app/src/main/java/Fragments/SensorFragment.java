@@ -170,6 +170,13 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     private List<Float> pitchValue = new ArrayList<>();
     private List<Float> rollValue = new ArrayList<>();
 
+    private List<String> illuDate = new ArrayList<>();
+    private List<String> illuTime = new ArrayList<>();
+    private List<String> compassDate = new ArrayList<>();
+    private List<String> compassTime = new ArrayList<>();
+    private List<String> gyroDate = new ArrayList<>();
+    private List<String> gyroTime = new ArrayList<>();
+
     float[] accelerometerReading = new float[3];
     float[] magnetometerReading = new float[3];
     float[] gyroscopeReading = new float[3];
@@ -641,11 +648,11 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     gyroViewModel.setOn(false);
                     gyroViewModel.setIsCheck(false);
                 }
-                if(motViewModel.isOn()){
+                /*if(motViewModel.isOn()){
                     motViewModel.clear();
                     motViewModel.setOn(false);
                     motViewModel.setIsCheck(false);
-                }
+                }*/
                 if(rotViewModel.isOn()){
                     rotViewModel.clear();
                     rotViewModel.setOn(false);
@@ -732,10 +739,10 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                         Log.d("Min Delay Gyro", String.valueOf(gyroscope.getMinDelay()));
                         gyroManager.registerListener((SensorEventListener) view, gyroscope, rate);
                     }
-                    if(motViewModel.isOn()){
+                    /*if(motViewModel.isOn()){
                         motion = motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT);
                         motionManager.registerListener((SensorEventListener) view, motion, rate);
-                    }
+                    }*/
                     if(rotViewModel.isOn()){
                         rotation = rotationManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
                         Log.d("Max Delay Rotation", String.valueOf(rotation.getMaxDelay()));
@@ -814,7 +821,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     if(emailIntent.resolveActivity(requireActivity().getPackageManager()) != null){
                         startActivity(emailIntent);
                     }
-                    uriList.removeAll(uriList);
+                    //uriList.removeAll(uriList);
                 }
             }
         });
@@ -847,9 +854,9 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                     if(gyroViewModel.isOn()){
                         gyroManager.unregisterListener((SensorEventListener) view);
                     }
-                    if(motViewModel.isOn()){
+                    /*if(motViewModel.isOn()){
                         motionManager.unregisterListener((SensorEventListener) view);
-                    }
+                    }*/
                     if(rotViewModel.isOn()){
                         rotationManager.unregisterListener((SensorEventListener) view);
                     }
@@ -880,7 +887,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         });
     }
 
-    //Write the csv files with the informations of each method on
+    //Write the csv files with the information of each method on
     public void writeMethods(){
         if(ssViewModel.isSunLightBool()){
             Boolean sunExposure;
@@ -889,8 +896,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             slidingList = movingAverage(illuValue, windowSize);
             String text = "SunLight Exposure" + "," + "rate: " + rate + "\n" + " Time" + "," + "Sunlight" + "," + "Date" + "\n";
             for(int i = 0; i < slidingList.size(); i++){
-                String date = String.valueOf(illuViewModel.getAllIlluminance().get(i).getDate());
-                String time = String.valueOf(illuViewModel.getAllIlluminance().get(i).getTime());
+                String date = String.valueOf(illuDate.get(i));
+                String time = String.valueOf(illuTime.get(i));
                 if(slidingList.get(i) > 10000){
                     sunExposure = true;
                 }else{
@@ -932,8 +939,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
             slidingAccList = movingAverage(accValue, windowSize);
             slidingGyroList = movingAverage(gyroValue, windowSize);
             for(int i = 0; i<slidingGyroList.size(); i++){
-                String date = accViewModel.getAccelerometer().get(i).getDate();
-                String time = accViewModel.getAccelerometer().get(i).getTime();
+                String date = gyroDate.get(i);
+                String time = gyroTime.get(i);
                 if(slidingAccList.get(i) < 5 && slidingAccList.get(i) > -5 && slidingGyroList.get(i) > -5 && slidingGyroList.get(i) < 5){
                     motion = false;
                 }else{
@@ -946,9 +953,9 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         }
         if(ssViewModel.isCompassBool()){
             String text = "Compass Method" + "," + "rate: " + (float)rate2/1000 + "\n" + "Time" + "," + "Azimuth" + "," + "Pitch" + "," + "Roll" + "," + "Date" + "\n";
-            for(int i=0; i<accViewModel.getAccelerometer().size(); i++){
-                String date = accViewModel.getAccelerometer().get(i).getDate();
-                String time = accViewModel.getAccelerometer().get(i).getTime();
+            for(int i=0; i<azimuthValue.size(); i++){
+                String date = compassDate.get(i);
+                String time = compassTime.get(i);
                 text = text + time + "," + azimuthValue.get(i) + "," + pitchValue.get(i) + "," + rollValue.get(i) + "," + date + "\n";
             }
 
@@ -1067,7 +1074,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                         String fileName = "gyroLog.csv";
                         writeFile(text, fileName);
                     }
-                    if(motViewModel.isOn()){
+                    /*if(motViewModel.isOn()){
                         String text = "Sensor: Motion Detection" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Motion" + "," + "Date" + "\n";
                         for (int i = 0; i < motViewModel.getMotion().size(); i++) {
                             String mot = String.valueOf(motViewModel.getMotion().get(i).getMotion());
@@ -1077,7 +1084,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                         }
                         String fileName = "motionLog.csv";
                         writeFile(text, fileName);
-                    }
+                    }*/
                     if(rotViewModel.isOn()){
                         String text = "Sensor: Rotation Vector" + "," + "rate: " + (float)rate/1000000 + "\n" + "Time" + "," + "Xsin" + "," + "Ysin" + "," + "Zsin" + "," + "Cos" + "," + "Estimated Heading Accuracy" + "," + "Date" + "\n";
                         for (int i = 0; i < rotViewModel.getRotation().size(); i++) {
@@ -1148,7 +1155,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                             double latitude = gpsViewModel.getGps().get(i).getLatitude();
                             String date = gpsViewModel.getGps().get(i).getDate();
                             String time = gpsViewModel.getGps().get(i).getTime();
-                            text = text + time + "," + latitude + "," + longitude + "," + "," + date + "\n";
+                            text = text + time + "," + latitude + "," + longitude + "," + date + "\n";
                         }
                         String fileName = "gpsLog.csv";
                         writeFile(text, fileName);
@@ -1173,7 +1180,7 @@ public class SensorFragment extends Fragment implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         getDateTime();
-        Log.d("Here: ", "something chenged");
+        Log.d("Here: ", "something changed");
         if(event.sensor.equals(accelerometer)){
             accelerometerReading = event.values;
             accValue.add((float) Math.sqrt(accelerometerReading[0]*accelerometerReading[0] + accelerometerReading[1]*accelerometerReading[1] + accelerometerReading[2]*accelerometerReading[2]));
@@ -1187,6 +1194,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                 gyroscopeReading = event.values;
                 gyroValue.add((float) Math.sqrt(gyroscopeReading[0]*gyroscopeReading[0] + gyroscopeReading[1]*gyroscopeReading[1] + gyroscopeReading[2]*gyroscopeReading[2]));
                 gyroscope gyroscopeValue = new gyroscope(gyroscopeReading[0], gyroscopeReading[1], gyroscopeReading[2], date, time);
+                gyroDate.add(date);
+                gyroTime.add(time);
                 gyroViewModel.insert(gyroscopeValue);
             }else{
                 if(event.sensor.equals(gravity)){
@@ -1217,6 +1226,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
                                     if(event.sensor.equals(illuminance)){
                                         illuminanceReading = event.values;
                                         illuValue.add(illuminanceReading[0]);
+                                        illuDate.add(date);
+                                        illuTime.add(time);
                                         illuminance illuminanceValue = new illuminance(illuminanceReading[0], date, time);
                                         illuViewModel.insert(illuminanceValue);
                                     }else{
@@ -1271,6 +1282,8 @@ public class SensorFragment extends Fragment implements SensorEventListener {
         azimuthValue.add((float) ( -orientationAngles[0]*180/3.1415));
         pitchValue.add(orientationAngles[1]);
         rollValue.add(orientationAngles[2]);
+        compassDate.add(date);
+        compassTime.add(time);
 
         //compassBinding.pointer.setRotation((float) (-orientationAngles[0]*180/3.1415));
     }

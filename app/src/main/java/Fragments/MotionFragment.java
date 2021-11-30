@@ -30,14 +30,14 @@ public class MotionFragment extends Fragment {
     private accelerometerViewModel accViewModel;
     private gravityViewModel gravViewModel;
     private gyroscopeViewModel gyroViewModel;
-    private motionViewModel motViewModel;
+    //private motionViewModel motViewModel;
     private rotationViewModel rotViewModel;
     private stepViewModel stViewModel;
     private gpsLocationViewModel gpsViewModel;
 
     private SensorManager accManager;
     private SensorManager gyroManager;
-    private SensorManager motionManager;
+    //private SensorManager motionManager;
     private SensorManager rotationManager;
     private SensorManager stepcounterManager;
     private SensorManager gravManager;
@@ -97,14 +97,14 @@ public class MotionFragment extends Fragment {
                 }
             }
         });
-        motViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        /*motViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(!aBoolean){
                     motionBinding.motionBox.setChecked(false);
                 }
             }
-        });
+        });*/
         rotViewModel.getIsCheck().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -135,7 +135,7 @@ public class MotionFragment extends Fragment {
         accViewModel = new ViewModelProvider(requireActivity()).get(accelerometerViewModel.class);
         gravViewModel = new ViewModelProvider(requireActivity()).get(gravityViewModel.class);
         gyroViewModel = new ViewModelProvider(requireActivity()).get(gyroscopeViewModel.class);
-        motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
+        //motViewModel = new ViewModelProvider(requireActivity()).get(motionViewModel.class);
         rotViewModel = new ViewModelProvider(requireActivity()).get(rotationViewModel.class);
         stViewModel = new ViewModelProvider(requireActivity()).get(stepViewModel.class);
         gpsViewModel = new ViewModelProvider(requireActivity()).get(gpsLocationViewModel.class);
@@ -195,7 +195,7 @@ public class MotionFragment extends Fragment {
 
             }
         });
-        motionBinding.motionBox.setOnClickListener(new View.OnClickListener() {
+        /*motionBinding.motionBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(motionBinding.motionBox.isChecked()){
@@ -207,7 +207,7 @@ public class MotionFragment extends Fragment {
                 }
 
             }
-        });
+        });*/
         motionBinding.rotationBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,7 +239,7 @@ public class MotionFragment extends Fragment {
     public void verifySensors(){
         accManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gyroManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
-        motionManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        //motionManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         rotationManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         stepcounterManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         gravManager =  (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -274,15 +274,15 @@ public class MotionFragment extends Fragment {
             gravViewModel.setOn(true);
         }
 
-        if(motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT) == null){
-            motionBinding.motionBox.setClickable(false);
+        /*if(motionManager.getDefaultSensor(Sensor.TYPE_MOTION_DETECT) == null){
             motionBinding.motionBox.setTextColor(Color.GRAY);
+            motionBinding.motionBox.setClickable(false);
         }else{
             motionBinding.motionBox.setTextColor(Color.GREEN);
             motionBinding.motionBox.setChecked(true);
             motViewModel.setIsCheck(true);
             motViewModel.setOn(true);
-        }
+        }*/
 
         if(rotationManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) == null){
             motionBinding.rotationBox.setClickable(false);

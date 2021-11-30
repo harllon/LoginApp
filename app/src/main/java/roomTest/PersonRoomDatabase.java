@@ -30,8 +30,8 @@ public abstract class PersonRoomDatabase extends RoomDatabase {
             databaseWriteExecutor.execute(() -> {
                 PersonDAO pessoa = INSTANCE.personDao();
                 pessoa.deleteAll();
-                String password = passwordHash.getMd5("flamengo");
-                Person firstLogin = new Person("harllon", "harllon.paz@gmail.com", password, "Harllon Paz", true);
+                String password = passwordHash.getMd5("admin");
+                Person firstLogin = new Person("admin", "admin@admin.com", password, "admin", true);
                 pessoa.insert(firstLogin);
             });
         }
